@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronUp } from "lucide-react";
+
 
 const categoriesCol1 = [
     { name: "Business Law", href: "/category/business-law" },
@@ -102,7 +102,7 @@ export default function Footer() {
                             Layman Litigation
                         </h3>
                         <p className="text-sm leading-relaxed text-gray-400">
-                            © 2025{" "}
+                            © 2026{" "}
                             <span className="italic text-[#d9b04f]">
                                 Layman Litigation
                             </span>{" "}

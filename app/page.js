@@ -1,16 +1,8 @@
-'use client'
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import Image from "next/image";
-import { ArrowUp } from "lucide-react";
-
 export default function Home() {
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+
   return (
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <Header />
+
       <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
 
         <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
@@ -55,13 +47,7 @@ export default function Home() {
           </a>
         </div>
       </main>
-      <Footer />
 
-      <button
-        onClick={scrollToTop}
-        className="flex fixed bottom-4 right-4 h-9 w-9 items-center justify-center rounded bg-[#d9b04f] text-black transition-colors hover:bg-[#c9a03f]"
-        aria-label="Scroll to top"
-      ><ArrowUp /></button>
     </div>
   );
 }
