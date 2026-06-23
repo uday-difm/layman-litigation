@@ -6,9 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "sync": "node --env-file=.env node_modules/@yourcompany/global-backend-next/sync.js"
   },
   "dependencies": {
+    "@yourcompany/global-backend-next": "file:../global_backend/src/sdk/yourcompany-global-backend-next-1.0.0.tgz",
     "lucide-react": "^1.18.0",
     "next": "16.2.9",
     "react": "19.2.4",

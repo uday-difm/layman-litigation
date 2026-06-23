@@ -1,10 +1,10 @@
-// app/page.js
+// app/[...slug]/page.js
 import React from "react";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { CMSClient } from "@yourcompany/global-backend-next";
-import ContactFormSection from "./[...slug]/ContactFormSection";
+import ContactFormSection from "./ContactFormSection";
 
 const cms = new CMSClient({
   baseUrl: process.env.NEXT_PUBLIC_CMS_BASE_URL || "http://localhost:3000",
@@ -115,6 +115,82 @@ function renderMarkdown(markdownText) {
   });
 
   return parsed;
+}
+
+// Reusable detailed blog post UI component
+function BlogPostDetail({ post }) {
+  const categories = post.categories || [];
+  const rawContent = typeof post.content === "string" ? post.content : JSON.stringify(post.content || "");
+  const contentHtml = renderMarkdown(rawContent);
+
+  return (
+    <article className="max-w-4xl mx-auto px-6 py-12">
+      <nav className="flex items-center gap-2 text-[10px] font-bold text-slate-400 mb-6 uppercase tracking-wider">
+        <Link href="/" className="hover:text-indigo-600 transition">Home</Link>
+        <span>/</span>
+        <Link href="/blog" className="hover:text-indigo-600 transition">Blog</Link>
+        <span>/</span>
+        <span className="text-slate-600 truncate max-w-xs">{post.title}</span>
+      </nav>
+
+      <header className="mb-8">
+        <div className="flex flex-wrap items-center gap-2 mb-4">
+          {categories.map((c) => (
+            <span key={c.id} className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-indigo-50 text-indigo-600 border border-indigo-100">
+              {c.name}
+            </span>
+          ))}
+        </div>
+        <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-slate-900 mb-6 leading-tight">
+          {post.title}
+        </h1>
+        <div className="flex items-center gap-3 pb-6 border-b border-slate-200">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-blue-500 flex items-center justify-center text-white font-extrabold shadow-sm">
+            {post.author ? post.author.email.charAt(0).toUpperCase() : "A"}
+          </div>
+          <div>
+            <p className="text-xs font-bold text-slate-800">
+              {post.author ? post.author.email.split("@")[0] : "Author"}
+            </p>
+            <p className="text-[10px] text-slate-400 font-medium mt-0.5">
+              {post.publishedAt ? new Date(post.publishedAt).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              }) : new Date(post.createdAt).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </p>
+          </div>
+        </div>
+      </header>
+
+      {post.featuredImage && (
+        <div className="relative w-full aspect-[16/10] md:aspect-[21/9] rounded-2xl overflow-hidden shadow-sm mb-10 border border-slate-100">
+          <SafeImage
+            src={post.featuredImage.secureUrl || post.featuredImage.url}
+            alt={post.title}
+            fill
+            style={{ objectFit: "cover" }}
+            priority
+          />
+        </div>
+      )}
+
+      {post.excerpt && (
+        <p className="text-lg md:text-xl font-light text-slate-500 leading-relaxed mb-8 italic pl-4 border-l-4 border-slate-350">
+          {post.excerpt}
+        </p>
+      )}
+
+      <div
+        className="prose prose-slate prose-lg max-w-none space-y-4"
+        dangerouslySetInnerHTML={{ __html: contentHtml }}
+      />
+    </article>
+  );
 }
 
 // Section components
@@ -240,7 +316,7 @@ function ServicesSection({ content }) {
             <div key={item.id} className="bg-white rounded-xl shadow-sm border hover:shadow-md transition-all duration-200 p-6 flex flex-col justify-between">
               <div>
                 <h3 className="text-lg font-bold text-[#1b1b1b] mb-2">{item.title}</h3>
-                <p className="text-xs text-slate-505 leading-relaxed mb-4">{item.description}</p>
+                <p className="text-xs text-slate-500 leading-relaxed mb-4">{item.description}</p>
               </div>
               <div className="border-t pt-4 flex items-center justify-between mt-4">
                 <span className="font-mono text-sm font-bold text-[#d9b04f]">{item.price || "Contact Us"}</span>
@@ -450,10 +526,35 @@ function BlogsSection({ content }) {
   );
 }
 
-// Next.js Dynamic Metadata Generation for root homepage
-export async function generateMetadata() {
+// Next.js Dynamic Metadata Generation
+export async function generateMetadata({ params }) {
+  const p = await params;
+  const slug = p.slug.join("/");
+
+  // Determine if it is a blog detail page
+  const isBlog = p.slug.length === 2 && (p.slug[0] === "blogs" || p.slug[0] === "blog");
+
+  if (isBlog) {
+    try {
+      const postSlug = p.slug[1];
+      const posts = await cms.getPosts();
+      const post = posts.find((x) => x.slug === postSlug);
+      if (post) {
+        const title = post.seoTitle || post.title;
+        const desc = post.seoDescription || post.excerpt || "";
+        return {
+          title,
+          description: desc,
+        };
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return {};
+  }
+
   try {
-    const { seo } = await cms.getPage("");
+    const { seo } = await cms.getPage(slug);
     if (!seo) return {};
     return {
       title: seo.title,
@@ -472,11 +573,38 @@ export async function generateMetadata() {
   }
 }
 
-// Main Dynamic Catch-All Page Component for root homepage
-export default async function HomePage() {
+// Main Dynamic Catch-All Page Component
+export default async function CatchAllPage({ params }) {
+  const p = await params;
+  const slug = p.slug.join("/");
+
+  // Detect detailed blog post path, e.g. /blog/[slug] or /blogs/[slug]
+  const isBlogPath = p.slug.length === 2 && (p.slug[0] === "blogs" || p.slug[0] === "blog");
+
+  if (isBlogPath) {
+    try {
+      const postSlug = p.slug[1];
+      const posts = await cms.getPosts();
+      const post = posts.find((x) => x.slug === postSlug);
+
+      if (!post) {
+        return notFound();
+      }
+
+      return (
+        <div className="min-h-screen bg-slate-50 text-slate-950 pt-28">
+          <BlogPostDetail post={post} />
+        </div>
+      );
+    } catch (err) {
+      console.error("Error loading blog details:", err);
+      return notFound();
+    }
+  }
+
   let pageData = null;
   try {
-    pageData = await cms.getPage("");
+    pageData = await cms.getPage(slug);
   } catch (err) {
     console.error("Error loading CMS page:", err);
     return notFound();
@@ -516,7 +644,7 @@ export default async function HomePage() {
                 key={s.id}
                 siteId={cms.siteId}
                 content={s.content}
-                recaptchaSiteKey={null}
+                recaptchaSiteKey={null} // reCAPTCHA loaded dynamically if configured by settings
               />
             );
           }
