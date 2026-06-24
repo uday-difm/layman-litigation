@@ -1,10 +1,5 @@
 // app/sitemap.js
-import { CMSClient } from "@yourcompany/global-backend-next";
-
-const cms = new CMSClient({
-  baseUrl: process.env.NEXT_PUBLIC_CMS_BASE_URL || "http://localhost:3000",
-  siteId: process.env.NEXT_PUBLIC_SITE_ID || "layman_litigation",
-});
+import { cms } from "@/lib/cms";
 
 export default async function sitemap() {
   const domain = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3001";

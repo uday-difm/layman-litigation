@@ -1,226 +1,180 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Search, ChevronDown, User } from "lucide-react";
-import { useStickyHeader } from "@/hooks/useStickyHeader";
-import { useState, useRef, useEffect } from "react";
+import { Menu, X, ChevronDown } from "lucide-react";
 
-const otherCategories = [
-  { name: "Immigration", href: "/category/immigration" },
-  { name: "Employment", href: "/category/employment" },
-  { name: "Civil Litigation", href: "/category/civil-litigation" },
-  { name: "General Practice", href: "/category/general-practice" },
-  { name: "Medical Malpractice", href: "/category/medical-malpractice" },
-  {
-    name: "Social Security Disability",
-    href: "/category/social-security-disability",
-  },
-  { name: "Tax", href: "/category/tax" },
-];
-
-export default function Header() {
-  const user = "";
-  const isSticky = useStickyHeader();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const dropdownRef = useRef(null);
-  const searchInputRef = useRef(null);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+export default function Header({ config = {}, navigation = [], categories = [] }) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(false);
+  console.log("Config: ", config.header, "Navigation: ", navigation.items);
+  navigation = navigation.items;
+  const {
+    logoUrl,
+    logoText,
+    logoType,
+    ctaText,
+    ctaLink,
+    sticky,
+    borderBottom,
+    announcementBar,
+    shadowSize,
+  } = config.header;
 
   return (
-    <header
-      className={`fixed top-0 z-50 w-full bg-[#1b1b1b] transition-all duration-300 ${
-        isSticky ? "shadow-lg" : ""
-      }`}
-    >
-      {/* TOP ROW */}
-      <div
-        className={`overflow-hidden transition-all duration-300 ${
-          isSticky ? "max-h-0 opacity-0" : "max-h-40 opacity-100"
-        }`}
-      >
-        <div className="mx-auto grid max-w-7xl grid-cols-3 items-center px-8 py-5">
-          {/* Date */}
-          <div className="text-sm text-white">Tuesday, June 16, 2026</div>
-
-          {/* Logo */}
-          <div className="flex justify-center">
-            <Image
-              src="/assets/Final-Logo-Retina.png"
-              alt="Layman Litigation"
-              width={520}
-              height={120}
-              priority
-              className="h-auto w-auto"
-            />
-          </div>
-
-          {/* User */}
-          {user && (
-            <div className="flex justify-end">
-              <button className="flex items-center gap-2 text-sm font-semibold text-white">
-                <User size={18} />
-                DIFMSITANSHU
-                <ChevronDown size={14} />
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* NAVIGATION */}
-      <div
-        className={`mx-auto flex max-w-7xl items-center transition-all duration-300 ${
-          isSticky ? "py-10 px-6" : "py-5 px-8"
-        }`}
-      >
-        {/* Sticky Logo */}
+    <>
+      {/* Announcement Bar */}
+      {announcementBar?.enabled && (
         <div
-          className={`overflow-hidden transition-all duration-300 ${
-            isSticky ? "mr-10 w-60 opacity-100" : "w-0 opacity-0"
-          }`}
+          className="text-center py-2 text-sm font-medium"
+          style={{
+            backgroundColor: announcementBar.bgColor,
+            color: announcementBar.textColor,
+          }}
         >
-          <Image
-            src="/assets/Final-Logo-Retina.png"
-            alt="Layman Litigation"
-            width={240}
-            height={55}
-            className="h-auto w-full object-contain"
-          />
+          <Link href={announcementBar.link}>{announcementBar.text}</Link>
         </div>
+      )}
 
-        {/* Menu */}
-        <nav className="flex flex-wrap items-center gap-8">
-          <Link
-            href="/"
-            className="text-sm font-bold uppercase text-white hover:text-[#d9b04f]"
-          >
-            Home
-          </Link>
+      {/* Header */}
+      <header
+        className={`
+          bg-white
+          ${sticky ? "sticky top-0 z-50" : ""}
+          ${borderBottom ? "border-b border-gray-200" : ""}
+          ${shadowSize === "small" ? "shadow-sm" : ""}
+        `}
+      >
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex items-center justify-between h-20">
+            {/* Logo */}
+            <Link href="/" className="flex items-center">
+              {logoType === "image" && logoUrl ? (
+                <Image
+                  src={logoUrl}
+                  alt={logoText}
+                  width={120}
+                  height={24}
+                  priority
+                />
+              ) : (
+                <span className="font-bold text-xl">{logoText}</span>
+              )}
+            </Link>
 
-          <Link
-            href="/category/mass-tort"
-            className="text-sm font-bold uppercase text-white hover:text-[#d9b04f]"
-          >
-            Mass Tort
-          </Link>
+            {/* Desktop Menu */}
+            <nav className="hidden md:flex items-center gap-8">
+              {navigation.map((item) => (
+                <Link
+                  key={item.id}
+                  href={item.url}
+                  className="text-sm font-medium text-gray-700 hover:text-black transition"
+                >
+                  {item.label}
+                </Link>
+              ))}
 
-          <Link
-            href="/category/intellectual-property"
-            className="text-sm font-bold uppercase text-white hover:text-[#d9b04f]"
-          >
-            Intellectual Property
-          </Link>
-
-          <Link
-            href="/category/personal-injury"
-            className="text-sm font-bold uppercase text-white hover:text-[#d9b04f]"
-          >
-            Personal Injury
-          </Link>
-
-          <Link
-            href="/category/corporate"
-            className="text-sm font-bold uppercase text-white hover:text-[#d9b04f]"
-          >
-            Corporate
-          </Link>
-
-          {/* Other — dropdown */}
-          <div className="relative" ref={dropdownRef}>
-            <button
-              onClick={() => setDropdownOpen((prev) => !prev)}
-              className="flex items-center gap-1 text-sm font-bold uppercase text-white hover:text-[#d9b04f]"
-            >
-              Other
-              <ChevronDown
-                size={14}
-                className={`transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`}
-              />
-            </button>
-
-            {dropdownOpen && (
-              <div className="absolute left-0 top-full mt-2 min-w-55 rounded bg-white py-2 shadow-lg">
-                {otherCategories.map((cat) => (
-                  <Link
-                    key={cat.name}
-                    href={cat.href}
-                    className="block px-5 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-100 hover:text-[#d9b04f]"
-                    onClick={() => setDropdownOpen(false)}
-                  >
-                    {cat.name}
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <Link
-            href="/publications"
-            className="text-sm font-bold uppercase text-white hover:text-[#d9b04f]"
-          >
-            Publications
-          </Link>
-
-          <Link
-            href="/contact"
-            className="text-sm font-bold uppercase text-white hover:text-[#d9b04f]"
-          >
-            Contact Us
-          </Link>
-        </nav>
-
-        {/* Search */}
-        <div className="ml-auto flex items-center">
-          {isSticky ? (
-            <div className="flex items-center">
-              <div
-                className={`overflow-hidden transition-all duration-300 ${
-                  searchOpen ? "w-56 opacity-100" : "w-0 opacity-0"
-                }`}
-              >
-                <div className="flex h-9 items-center rounded bg-[#333333]">
-                  <input
-                    ref={searchInputRef}
-                    placeholder="Search..."
-                    className="w-full bg-transparent px-4 text-sm text-white placeholder:text-gray-400 outline-none"
-                  />
+              {/* Categories Dropdown */}
+              {categories && categories.length > 0 && (
+                <div className="relative group py-2">
+                  <button className="flex items-center gap-1.5 text-sm font-medium text-gray-700 hover:text-black transition focus:outline-hidden cursor-pointer">
+                    Categories
+                    <ChevronDown size={14} className="text-gray-400 group-hover:text-black transition duration-200" />
+                  </button>
+                  {/* Dropdown Menu */}
+                  <div className="absolute left-0 mt-2 w-56 rounded-xl bg-white border border-gray-150 shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 transform translate-y-1 group-hover:translate-y-0 z-50 p-2">
+                    {categories.map((cat) => (
+                      <Link
+                        key={cat.id}
+                        href={`/category/${cat.slug}`}
+                        className="block rounded-lg px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-black transition"
+                      >
+                        {cat.name}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
-              </div>
-              <button
-                className="ml-2 text-white transition-colors hover:text-[#d9b04f]"
-                onClick={() => {
-                  setSearchOpen((prev) => !prev);
-                  if (!searchOpen) {
-                    setTimeout(() => searchInputRef.current?.focus(), 310);
-                  }
-                }}
+              )}
+            </nav>
+
+            {/* CTA */}
+            <div className="hidden md:flex">
+              <Link
+                href={ctaLink}
+                className="px-5 py-2.5 rounded-lg bg-black text-white font-medium hover:bg-gray-800 transition"
               >
-                <Search size={18} />
-              </button>
+                {ctaText}
+              </Link>
             </div>
-          ) : (
-            <div className="flex h-10 w-64 items-center rounded bg-[#333333]">
-              <input
-                placeholder="Search..."
-                className="flex-1 bg-transparent px-4 text-sm text-white placeholder:text-gray-400 outline-none"
-              />
-              <Search className="mr-3 text-white" size={18} />
-            </div>
-          )}
+
+            {/* Mobile Toggle */}
+            <button
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="md:hidden"
+            >
+              {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
-      </div>
-    </header>
+
+        {/* Mobile Drawer */}
+        {mobileOpen && (
+          <div className="md:hidden border-t bg-white">
+            <nav className="flex flex-col p-4">
+              {navigation.map((item) => (
+                <Link
+                  key={item.id}
+                  href={item.url}
+                  className="py-3 border-b text-sm font-medium"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              ))}
+
+              {/* Mobile Categories Collapsible */}
+              {categories && categories.length > 0 && (
+                <div className="border-b py-3">
+                  <button
+                    onClick={() => setMobileCategoriesOpen(!mobileCategoriesOpen)}
+                    className="flex w-full items-center justify-between text-sm font-medium text-gray-700"
+                  >
+                    Categories
+                    <ChevronDown
+                      size={16}
+                      className={`text-gray-400 transition-transform duration-200 ${mobileCategoriesOpen ? "rotate-180" : ""
+                        }`}
+                    />
+                  </button>
+                  {mobileCategoriesOpen && (
+                    <div className="mt-2 ml-4 flex flex-col gap-1 border-l-2 border-gray-100 pl-4">
+                      {categories.map((cat) => (
+                        <Link
+                          key={cat.id}
+                          href={`/category/${cat.slug}`}
+                          className="py-2 text-sm text-gray-600 hover:text-black"
+                          onClick={() => setMobileOpen(false)}
+                        >
+                          {cat.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <Link
+                href={ctaLink}
+                className="mt-4 px-4 py-3 rounded-lg bg-black text-white text-center"
+                onClick={() => setMobileOpen(false)}
+              >
+                {ctaText}
+              </Link>
+            </nav>
+          </div>
+        )}
+      </header>
+    </>
   );
 }

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { publications } from "@/data/publications";
+import { cms } from "@/lib/cms";
 
 const categoriesConfig = {
   "business-law": {
@@ -105,20 +105,53 @@ const categoriesConfig = {
   },
 };
 
-
 export default async function CategoryPage({ params }) {
   const { slug } = await params;
 
-  // Verify if the requested category is valid
-  const categoryInfo = categoriesConfig[slug];
-  if (!categoryInfo) {
+  // Retrieve posts to filter by category
+  let allPosts = [];
+  try {
+    const postsResponse = await cms.getPosts();
+    allPosts = postsResponse.posts || [];
+  } catch (err) {
+    console.error("Failed to fetch posts in CategoryPage:", err);
+  }
+
+  // Filter posts matching this category slug
+  const filteredPosts = allPosts.filter((post) =>
+    post.categories && post.categories.some((cat) => cat.slug === slug)
+  );
+
+  // Extract all active categories dynamically for the sidebar
+  const categoriesMap = new Map();
+  allPosts.forEach((post) => {
+    if (post.categories) {
+      post.categories.forEach((cat) => {
+        categoriesMap.set(cat.slug, cat);
+      });
+    }
+  });
+  const allActiveCategories = Array.from(categoriesMap.values()).sort((a, b) =>
+    a.name.localeCompare(b.name)
+  );
+
+  // Find the category record to verify if it exists
+  const activeCategory = allActiveCategories.find((cat) => cat.slug === slug);
+
+  // If the category does not exist in our active database, verify if it is in hardcoded list
+  const categoryInfo = categoriesConfig[slug] || (activeCategory ? {
+    name: activeCategory.name,
+    description: `Expert articles and insights on ${activeCategory.name}.`,
+    accentColor: "#d9b04f"
+  } : null);
+
+  if (!categoryInfo && !activeCategory) {
     notFound();
   }
 
-  // Filter publications matching this category
-  const filteredPublications = publications.filter(
-    (pub) => pub.category === slug,
-  );
+  const categoryName = categoryInfo?.name || activeCategory?.name;
+  const categoryDesc = categoryInfo?.description || `Expert articles and insights on ${categoryName}.`;
+  const categoryAccent = categoryInfo?.accentColor || "#d9b04f";
 
   return (
     <div className="min-h-screen bg-[#f5f5f5] pt-40 pb-20">
@@ -132,18 +165,11 @@ export default async function CategoryPage({ params }) {
             Home
           </Link>
           <span className="text-white/40">›</span>
-          <Link
-            href="/publications"
-            className="text-sm font-bold uppercase text-white/80 hover:text-[#d9b04f] transition-colors"
-          >
-            Publications
-          </Link>
-          <span className="text-white/40">›</span>
           <span
             className="text-sm font-bold uppercase"
-            style={{ color: categoryInfo.accentColor }}
+            style={{ color: categoryAccent }}
           >
-            {categoryInfo.name}
+            {categoryName}
           </span>
         </div>
       </div>
@@ -157,118 +183,107 @@ export default async function CategoryPage({ params }) {
               <span
                 className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded"
                 style={{
-                  backgroundColor: `${categoryInfo.accentColor}25`,
+                  backgroundColor: `${categoryAccent}25`,
                   color: "#1b1b1b",
                 }}
               >
                 Category
               </span>
               <h1 className="mt-4 text-4xl font-extrabold text-[#1b1b1b] tracking-tight">
-                {categoryInfo.name}
+                {categoryName}
               </h1>
               <p className="mt-4 max-w-2xl text-lg text-gray-500 leading-relaxed">
-                {categoryInfo.description}
+                {categoryDesc}
               </p>
               <div className="mt-6 text-sm text-gray-400">
-                {filteredPublications.length === 1
-                  ? "1 publication available"
-                  : `${filteredPublications.length} publications available`}
+                {filteredPosts.length === 1
+                  ? "1 article available"
+                  : `${filteredPosts.length} articles available`}
               </div>
             </div>
 
-       
-            {filteredPublications.length > 0 ? (
+            {filteredPosts.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {filteredPublications.map((pub) => (
-                  <article key={pub.issue} className="group">
-                    <h2 className="mb-3 text-lg font-semibold text-[#1b1b1b]">
-                      {pub.month}
-                    </h2>
-                    <Link href={`/publications/${pub.slug}`} className="block">
-                      <div
-                        className={`relative aspect-3/4 overflow-hidden rounded-lg bg-linear-to-br ${pub.gradient} shadow-md transition-all duration-300 group-hover:shadow-xl group-hover:-translate-y-1`}
-                      >
-                        <div className="absolute inset-0 opacity-10">
-                          <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/20" />
-                          <div className="absolute -bottom-8 -left-8 h-32 w-32 rounded-full bg-white/10" />
-                        </div>
-                        <div className="relative flex h-full flex-col justify-between p-6">
-                          <div>
-                            <div className="flex items-center justify-between">
+                {filteredPosts.map((post) => {
+                  const dateToDisplay = post.publishedAt || post.createdAt;
+                  return (
+                    <article
+                      key={post.id}
+                      className="group flex flex-col justify-between bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-250 overflow-hidden"
+                    >
+                      <div>
+                        {post.featuredImage ? (
+                          <div className="relative w-full aspect-[16/10] overflow-hidden bg-gray-100">
+                            <img
+                              src={post.featuredImage.secureUrl || post.featuredImage.url}
+                              alt={post.title}
+                              className="object-cover w-full h-full group-hover:scale-102 transition duration-300"
+                            />
+                          </div>
+                        ) : (
+                          <div
+                            className="relative w-full aspect-[16/10] flex items-center justify-center text-white p-6 overflow-hidden"
+                            style={{
+                              background: `linear-gradient(135deg, ${categoryAccent}90 0%, #1b1b1b 100%)`,
+                            }}
+                          >
+                            <span className="font-bold text-lg text-center opacity-90 leading-tight">
+                              {post.title}
+                            </span>
+                          </div>
+                        )}
+                        <div className="p-6">
+                          <div className="flex gap-2 mb-3 flex-wrap">
+                            {(post.categories || []).map((c) => (
                               <span
-                                className="rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest"
-                                style={{
-                                  backgroundColor: pub.accent,
-                                  color: "#1b1b1b",
-                                }}
+                                key={c.id}
+                                className="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600"
                               >
-                                {pub.issue}
+                                {c.name}
                               </span>
-                              <span className="text-[10px] tracking-wider text-white/50">
-                                ISSN 3066-5000
-                              </span>
-                            </div>
-                            <div className="mt-6">
-                              <p
-                                className="text-xs font-bold uppercase tracking-[0.2em]"
-                                style={{ color: pub.accent }}
-                              >
-                                Layman Litigation
-                              </p>
-                              <div
-                                className="mt-1 h-[2px] w-10"
-                                style={{ backgroundColor: pub.accent }}
-                              />
-                            </div>
+                            ))}
                           </div>
-                          <div className="my-auto">
-                            <h3 className="text-xl font-bold leading-tight text-white">
-                              {pub.title}
+                          <Link href={`/blog/${post.slug}`}>
+                            <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-[#d9b04f] transition line-clamp-2 leading-snug">
+                              {post.title}
                             </h3>
-                            <p className="mt-2 text-sm leading-relaxed text-white/60">
-                              {pub.subtitle}
+                          </Link>
+                          {post.excerpt && (
+                            <p className="text-xs text-slate-500 leading-relaxed line-clamp-3 mb-4">
+                              {post.excerpt}
                             </p>
-                          </div>
-                          <div className="flex items-end justify-between">
-                            <p className="text-[10px] uppercase tracking-wider text-white/40">
-                              {pub.month}
-                            </p>
-                            <div
-                              className="flex h-8 w-8 items-center justify-center rounded-full transition-transform duration-300 group-hover:scale-110"
-                              style={{ backgroundColor: pub.accent }}
-                            >
-                              <span className="text-xs font-bold text-[#1b1b1b]">
-                                →
-                              </span>
-                            </div>
-                          </div>
+                          )}
                         </div>
                       </div>
-                    </Link>
-                  </article>
-                ))}
+                      <div className="p-6 pt-0 border-t border-slate-50 mt-4 flex items-center justify-between text-[10px] text-slate-400 font-semibold">
+                        <span>
+                          By {post.author ? post.author.email.split("@")[0] : "Author"}
+                        </span>
+                        <span>
+                          {new Date(dateToDisplay).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
+                        </span>
+                      </div>
+                    </article>
+                  );
+                })}
               </div>
             ) : (
               /* High-end Empty State */
               <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-12 text-center shadow-xs">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gray-50 text-gray-400">
-                  📚
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gray-50 text-gray-400 text-2xl">
+                  📝
                 </div>
                 <h3 className="mt-4 text-lg font-bold text-gray-800">
-                  No Current Issues
+                  No Active Articles
                 </h3>
                 <p className="mx-auto mt-2 max-w-sm text-sm text-gray-500">
-                  We are currently curating authoritative publications for our
-                  **{categoryInfo.name}** issue. Check back soon!
+                  We are currently writing and reviewing legal articles for{" "}
+                  <strong>{categoryName}</strong>. Check back soon!
                 </p>
-                <div className="mt-6 flex justify-center gap-4">
-                  <Link
-                    href="/publications"
-                    className="rounded-md bg-[#1b1b1b] px-4 py-2 text-xs font-bold uppercase text-white hover:bg-[#d9b04f] transition-colors"
-                  >
-                    View All Issues
-                  </Link>
-                </div>
               </div>
             )}
           </div>
@@ -280,24 +295,27 @@ export default async function CategoryPage({ params }) {
                 Other Categories
               </h3>
               <ul className="mt-4 space-y-3">
-                {Object.entries(categoriesConfig)
-                  .filter(([key]) => key !== slug)
-                  .map(([key, value]) => (
-                    <li key={key}>
-                      <Link
-                        href={`/category/${key}`}
-                        className="group flex items-center justify-between text-sm text-gray-600 hover:text-[#1b1b1b] transition-colors"
-                      >
-                        <span className="font-medium">{value.name}</span>
-                        <span
-                          className="text-xs opacity-0 group-hover:opacity-100 transition-opacity"
-                          style={{ color: value.accentColor }}
+                {allActiveCategories
+                  .filter((cat) => cat.slug !== slug)
+                  .map((cat) => {
+                    const cfg = categoriesConfig[cat.slug] || { accentColor: "#d9b04f" };
+                    return (
+                      <li key={cat.id}>
+                        <Link
+                          href={`/category/${cat.slug}`}
+                          className="group flex items-center justify-between text-sm text-gray-600 hover:text-[#1b1b1b] transition-colors"
                         >
-                          →
-                        </span>
-                      </Link>
-                    </li>
-                  ))}
+                          <span className="font-medium">{cat.name}</span>
+                          <span
+                            className="text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                            style={{ color: cfg.accentColor }}
+                          >
+                            →
+                          </span>
+                        </Link>
+                      </li>
+                    );
+                  })}
               </ul>
             </div>
           </div>
