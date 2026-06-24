@@ -154,24 +154,14 @@ export default async function CategoryPage({ params }) {
   const categoryAccent = categoryInfo?.accentColor || "#d9b04f";
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5] pt-40 pb-20">
-      {/* Dynamic Brand Breadcrumb */}
-      <div className="bg-[#1b1b1b] border-b border-white/10">
-        <div className="mx-auto flex max-w-7xl items-center gap-3 px-8 py-3">
-          <Link
-            href="/"
-            className="text-sm font-bold uppercase text-white hover:text-[#d9b04f] transition-colors"
-          >
-            Home
-          </Link>
-          <span className="text-white/40">›</span>
-          <span
-            className="text-sm font-bold uppercase"
-            style={{ color: categoryAccent }}
-          >
-            {categoryName}
-          </span>
-        </div>
+    <div className="min-h-screen bg-[#f5f5f5] pt-24 pb-20">
+      <div className="mx-auto max-w-7xl px-8 pt-8">
+        {/* Clean Breadcrumb */}
+        <nav className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-6">
+          <Link href="/" className="hover:text-[#d9b04f] transition">Home</Link>
+          <span>/</span>
+          <span className="text-slate-650" style={{ color: categoryAccent }}>{categoryName}</span>
+        </nav>
       </div>
 
       <div className="mx-auto max-w-7xl px-8 py-12">
