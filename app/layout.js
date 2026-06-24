@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrolltoTop";
 import { cms } from "@/lib/cms";
 import { GlobalAnalytics } from "@yourcompany/global-backend-next/components";
+import VisitorTracker from "@/components/VisitorTracker";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -75,6 +76,7 @@ export default async function RootLayout({ children }) {
         <GlobalAnalytics settings={settings} />
       </head>
       <body className="min-h-full flex flex-col">
+        <VisitorTracker />
         <Header config={headerLayout} navigation={navigation} categories={categories} />
         {children}
         <Footer config={footerConfig} categories={categories} navigation={navigationMenus} />
