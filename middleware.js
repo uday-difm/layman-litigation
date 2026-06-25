@@ -4,7 +4,8 @@
 
 import { NextResponse } from "next/server";
 
-const CMS_ORIGIN = process.env.NEXT_PUBLIC_CMS_BASE_URL || "http://localhost:3000";
+const CMS_ORIGIN =
+  process.env.NEXT_PUBLIC_CMS_BASE_URL || "http://localhost:3000";
 const SITE_ID = process.env.NEXT_PUBLIC_SITE_ID || "layman_litigation";
 
 export async function middleware(request) {
@@ -19,13 +20,25 @@ export async function middleware(request) {
   ) {
     return NextResponse.next();
   }
+  // ── Admin routes: redirect to backend login ──
+  if (
+    pathname === "/admin" ||
+    pathname.startsWith("/admin/") ||
+    pathname === "/login" ||
+    pathname === "/dashboard"
+  ) {
+    const adminUrl = `${CMS_ORIGIN}/login`;
+    return NextResponse.redirect(adminUrl);
+  }
 
   try {
     // Guard: skip redirect lookup if CMS is the same origin as this request
     // (prevents infinite loop when layman-litigation mistakenly runs on the same port as the backend)
     const requestOrigin = request.nextUrl.origin;
     if (CMS_ORIGIN === requestOrigin) {
-      console.warn("[Middleware] CMS_ORIGIN matches current app origin — skipping redirect lookup to prevent loop.");
+      console.warn(
+        "[Middleware] CMS_ORIGIN matches current app origin — skipping redirect lookup to prevent loop.",
+      );
       return NextResponse.next();
     }
 
