@@ -10,7 +10,6 @@ export const dynamic = "force-dynamic";
 
 // SafeImage helper to support Next.js Image caching or fallback <img>
 function SafeImage({ src, alt, ...props }) {
-
   if (!src) return null;
   const isLocal =
     src.startsWith("/") || src.startsWith(".") || src.startsWith("..");
@@ -602,46 +601,48 @@ export default async function HomePage() {
 
       {/* Main Content Area */}
       <main className="grow">
-        {sections.filter((s) => s.isVisible !== false).map((s) => {
-          const type = String(s.type || "").toUpperCase();
-          if (type === "HERO")
-            return <HeroSection key={s.id} content={s.content} />;
-          if (type === "TEXT_BLOCK")
-            return <TextBlockSection key={s.id} content={s.content} />;
-          if (type === "SERVICES")
-            return <ServicesSection key={s.id} content={s.content} />;
-          if (type === "TEAM")
-            return <TeamSection key={s.id} content={s.content} />;
-          if (type === "TESTIMONIALS")
-            return <TestimonialsSection key={s.id} content={s.content} />;
-          if (type === "FAQ")
-            return <FaqSection key={s.id} content={s.content} />;
-          if (type === "CTA")
-            return <CtaSection key={s.id} content={s.content} />;
-          if (type === "BLOGS")
-            return <BlogsSection key={s.id} content={s.content} />;
-          if (type === "CONTACT_FORM") {
-            return (
-              <ContactFormSection
-                key={s.id}
-                siteId={cms.siteId}
-                content={s.content}
-                recaptchaSiteKey={null}
-              />
-            );
-          }
+        {sections
+          .filter((s) => s.isVisible !== false)
+          .map((s) => {
+            const type = String(s.type || "").toUpperCase();
+            if (type === "HERO")
+              return <HeroSection key={s.id} content={s.content} />;
+            if (type === "TEXT_BLOCK")
+              return <TextBlockSection key={s.id} content={s.content} />;
+            if (type === "SERVICES")
+              return <ServicesSection key={s.id} content={s.content} />;
+            if (type === "TEAM")
+              return <TeamSection key={s.id} content={s.content} />;
+            if (type === "TESTIMONIALS")
+              return <TestimonialsSection key={s.id} content={s.content} />;
+            if (type === "FAQ")
+              return <FaqSection key={s.id} content={s.content} />;
+            if (type === "CTA")
+              return <CtaSection key={s.id} content={s.content} />;
+            if (type === "BLOGS")
+              return <BlogsSection key={s.id} content={s.content} />;
+            if (type === "CONTACT_FORM") {
+              return (
+                <ContactFormSection
+                  key={s.id}
+                  siteId={cms.siteId}
+                  content={s.content}
+                  recaptchaSiteKey={null}
+                />
+              );
+            }
 
-          return (
-            <section key={s.id} className="py-8 max-w-7xl mx-auto px-6">
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">
-                Fallback: {s.type} Section
-              </span>
-              <pre className="p-4 bg-white border rounded text-xs font-mono overflow-auto">
-                {JSON.stringify(s.content, null, 2)}
-              </pre>
-            </section>
-          );
-        })}
+            return (
+              <section key={s.id} className="py-8 max-w-7xl mx-auto px-6">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">
+                  Fallback: {s.type} Section
+                </span>
+                <pre className="p-4 bg-white border rounded text-xs font-mono overflow-auto">
+                  {JSON.stringify(s.content, null, 2)}
+                </pre>
+              </section>
+            );
+          })}
       </main>
     </div>
   );

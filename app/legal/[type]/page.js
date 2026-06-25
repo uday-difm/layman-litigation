@@ -3,6 +3,7 @@ import React from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { CMSClient } from "@yourcompany/global-backend-next";
+import { RichTextRenderer } from "@yourcompany/global-backend-next/components";
 
 export const dynamic = "force-dynamic";
 
@@ -127,7 +128,7 @@ export default async function LegalPage({ params }) {
     return notFound();
   }
 
-  const contentHtml = renderMarkdown(legalPage.content);
+  const contentHtml = legalPage.contentJson ? "" : renderMarkdown(legalPage.content);
 
   return (
     <article className="max-w-4xl mx-auto px-6 py-32 flex-1">
@@ -151,10 +152,14 @@ export default async function LegalPage({ params }) {
         </p>
       </header>
 
-      <div
-        className="blog-prose font-serif text-slate-700 leading-relaxed space-y-4"
-        dangerouslySetInnerHTML={{ __html: contentHtml }}
-      />
+      {legalPage.contentJson ? (
+        <RichTextRenderer content={legalPage.content} />
+      ) : (
+        <div
+          className="blog-prose font-serif text-slate-700 leading-relaxed space-y-4"
+          dangerouslySetInnerHTML={{ __html: contentHtml }}
+        />
+      )}
     </article>
   );
 }

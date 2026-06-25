@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { CMSClient } from "@yourcompany/global-backend-next";
 import ContactFormSection from "@/components/ContactFormSection";
-
+import { RichTextRenderer } from "@yourcompany/global-backend-next/components"
 export const dynamic = "force-dynamic";
 
 const cms = new CMSClient({
@@ -155,11 +155,6 @@ function renderMarkdown(markdownText) {
 // Reusable detailed blog post UI component
 function BlogPostDetail({ post }) {
   const categories = post.categories || [];
-  const rawContent =
-    typeof post.content === "string"
-      ? post.content
-      : JSON.stringify(post.content || "");
-  const contentHtml = renderMarkdown(rawContent);
 
   return (
     <article className="max-w-4xl mx-auto px-6 py-12">
@@ -200,15 +195,15 @@ function BlogPostDetail({ post }) {
             <p className="text-[10px] text-slate-400 font-medium mt-0.5">
               {post.publishedAt
                 ? new Date(post.publishedAt).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })
                 : new Date(post.createdAt).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
             </p>
           </div>
         </div>
@@ -232,10 +227,7 @@ function BlogPostDetail({ post }) {
         </p>
       )}
 
-      <div
-        className="prose prose-slate prose-lg max-w-none space-y-4"
-        dangerouslySetInnerHTML={{ __html: contentHtml }}
-      />
+      <RichTextRenderer content={post.content} />
     </article>
   );
 }
@@ -580,6 +572,7 @@ function BlogsSection({ content }) {
             {content?.title || "Latest Articles"}
           </h2>
           <p className="text-slate-500 mt-2 text-sm">
+
             {content?.description ||
               "Stay updated with our latest news and corporate insights."}
           </p>
