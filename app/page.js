@@ -4,8 +4,13 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { cms } from "@/lib/cms";
+import ContactFormSection from "@/components/ContactFormSection";
+
+export const dynamic = "force-dynamic";
+
 // SafeImage helper to support Next.js Image caching or fallback <img>
 function SafeImage({ src, alt, ...props }) {
+
   if (!src) return null;
   const isLocal =
     src.startsWith("/") || src.startsWith(".") || src.startsWith("..");
@@ -384,7 +389,7 @@ function TestimonialsSection({ content }) {
                   ))}
                 </div>
                 <p className="text-slate-350 text-xs italic leading-relaxed mb-6">
-                  "{item.content}"
+                  &ldquo;{item.content}&rdquo;
                 </p>
               </div>
               <div className="flex items-center gap-3 border-t border-neutral-800 pt-4">
@@ -597,7 +602,7 @@ export default async function HomePage() {
 
       {/* Main Content Area */}
       <main className="grow">
-        {sections.map((s) => {
+        {sections.filter((s) => s.isVisible !== false).map((s) => {
           const type = String(s.type || "").toUpperCase();
           if (type === "HERO")
             return <HeroSection key={s.id} content={s.content} />;

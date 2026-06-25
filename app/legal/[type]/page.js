@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { CMSClient } from "@yourcompany/global-backend-next";
 
+export const dynamic = "force-dynamic";
+
 const cms = new CMSClient({
   baseUrl: process.env.NEXT_PUBLIC_CMS_BASE_URL || "http://localhost:3000",
   siteId: process.env.NEXT_PUBLIC_SITE_ID || "layman_litigation",
@@ -61,12 +63,12 @@ function renderMarkdown(markdownText) {
   const formattedBlocks = blocks.map(block => {
     const trimmed = block.trim();
     if (!trimmed) return "";
-    
+
     const isBlockTag = /^(<h[1-6]|<pre|<blockquote|<ul|<ol|<li|<img|<p)/i.test(trimmed);
     if (isBlockTag) {
       return trimmed;
     }
-    
+
     const paragraphs = trimmed.split('\n').join('<br />');
     return `<p class="text-slate-650 leading-relaxed mb-5">${paragraphs}</p>`;
   });
@@ -149,7 +151,7 @@ export default async function LegalPage({ params }) {
         </p>
       </header>
 
-      <div 
+      <div
         className="blog-prose font-serif text-slate-700 leading-relaxed space-y-4"
         dangerouslySetInnerHTML={{ __html: contentHtml }}
       />

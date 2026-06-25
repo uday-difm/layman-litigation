@@ -4,7 +4,9 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { CMSClient } from "@yourcompany/global-backend-next";
-import ContactFormSection from "./ContactFormSection";
+import ContactFormSection from "@/components/ContactFormSection";
+
+export const dynamic = "force-dynamic";
 
 const cms = new CMSClient({
   baseUrl: process.env.NEXT_PUBLIC_CMS_BASE_URL || "http://localhost:3000",
@@ -479,7 +481,7 @@ function TestimonialsSection({ content }) {
                   ))}
                 </div>
                 <p className="text-slate-350 text-xs italic leading-relaxed mb-6">
-                  "{item.content}"
+                  &ldquo;{item.content}&rdquo;
                 </p>
               </div>
               <div className="flex items-center gap-3 border-t border-neutral-800 pt-4">
@@ -701,25 +703,26 @@ export default async function CatchAllPage({ params }) {
     p.slug.length === 2 && (p.slug[0] === "blogs" || p.slug[0] === "blog");
 
   if (isBlogPath) {
+    let post = null;
     try {
       const postSlug = p.slug[1];
       const postsResponse = await cms.getPosts();
       const posts = postsResponse.posts || [];
-      const post = posts.find((x) => x.slug === postSlug);
-
-      if (!post) {
-        return notFound();
-      }
-
-      return (
-        <div className="min-h-screen bg-slate-50 text-slate-950 pt-28">
-          <BlogPostDetail post={post} />
-        </div>
-      );
+      post = posts.find((x) => x.slug === postSlug);
     } catch (err) {
       console.error("Error loading blog details:", err);
       return notFound();
     }
+
+    if (!post) {
+      return notFound();
+    }
+
+    return (
+      <div className="min-h-screen bg-slate-50 text-slate-950 pt-28">
+        <BlogPostDetail post={post} />
+      </div>
+    );
   }
 
   let pageData = null;
@@ -748,7 +751,7 @@ export default async function CatchAllPage({ params }) {
 
       {/* Main Content Area */}
       <main className="grow">
-        {sections.map((s) => {
+        {sections.filter((s) => s.isVisible !== false).map((s) => {
           const type = String(s.type || "").toUpperCase();
           if (type === "HERO")
             return <HeroSection key={s.id} content={s.content} />;

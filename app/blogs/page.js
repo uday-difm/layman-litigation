@@ -1,9 +1,19 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { cms } from "@/lib/cms";
 
 export const dynamic = "force-dynamic";
 
 export default async function BlogPage({ searchParams }) {
+  // Check if this page is published in the CMS
+  try {
+    await cms.getPage("blogs");
+  } catch (err) {
+    if (err.message === "Page not found or is not published") {
+      return notFound();
+    }
+  }
+
   const params = await searchParams;
   const page = parseInt(params.page || "1", 10);
 
@@ -190,7 +200,7 @@ export default async function BlogPage({ searchParams }) {
               No Blog Posts Found
             </h3>
             <p className="mx-auto mt-2 max-w-sm text-sm text-gray-500">
-              We haven't published any articles yet. Please check back later!
+              We haven&apos;t published any articles yet. Please check back later!
             </p>
           </div>
         )}

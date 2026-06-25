@@ -5,6 +5,7 @@ export default async function sitemap() {
   const domain = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3001";
   try {
     const sitemapItems = await cms.getSitemap(domain);
+
     return sitemapItems.map((item) => ({
       url: item.url,
       lastModified: new Date(item.lastModified),

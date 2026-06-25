@@ -7,14 +7,28 @@ import ScrollToTop from "@/components/ScrolltoTop";
 import { cms } from "@/lib/cms";
 import { GlobalAnalytics } from "@yourcompany/global-backend-next/components";
 import VisitorTracker from "@/components/VisitorTracker";
+import CookieConsentBanner from "@/components/CookieConsentBanner";
+import CtaWidgets from "@/components/CtaWidgets";
 
 const inter = Inter({
   subsets: ["latin"],
 });
 
-export const metadata = {
-  title: "Layman Litigation",
-};
+export async function generateMetadata() {
+  try {
+    const data = await cms.getGlobalSettings();
+    const ws = data?.settings?.websiteSettings || {};
+    const favicon = ws.favicon || ws.faviconUrl; // support both field names
+    return {
+      title: ws.title || "Layman Litigation",
+      ...(favicon && {
+        icons: { icon: favicon, shortcut: favicon },
+      }),
+    };
+  } catch {
+    return { title: "Layman Litigation" };
+  }
+}
 
 export default async function RootLayout({ children }) {
   const headerLayout = await cms.getHeaderLayout();
@@ -51,7 +65,7 @@ export default async function RootLayout({ children }) {
       }
     });
     categories = Array.from(categoriesMap.values()).sort((a, b) =>
-      a.name.localeCompare(b.name)
+      a.name.localeCompare(b.name),
     );
   } catch (e) {
     console.error("Failed to load categories in layout:", e);
@@ -69,7 +83,7 @@ export default async function RootLayout({ children }) {
   const siteName = settings?.websiteSettings?.title || "Layman Litigation";
   const logoUrl = settings?.websiteSettings?.logoUrl;
   const navigationLinks = settings?.navigation?.links || [];
-
+  console.log(settings?.compliance);
   return (
     <html lang="en" className={`${inter.className} h-full antialiased`}>
       <head>
@@ -77,10 +91,22 @@ export default async function RootLayout({ children }) {
       </head>
       <body className="min-h-full flex flex-col">
         <VisitorTracker />
-        <Header config={headerLayout} navigation={navigation} categories={categories} />
+        <Header
+          config={headerLayout}
+          navigation={navigation}
+          categories={categories}
+        />
         {children}
-        <Footer config={footerConfig} categories={categories} navigation={navigationMenus} />
+        <Footer
+          config={footerConfig}
+          categories={categories}
+          navigation={navigationMenus}
+          contactDetails={settings?.contactDetails}
+          siteName={siteName}
+        />
         <ScrollToTop />
+        <CookieConsentBanner complianceSettings={settings?.compliance} />
+        <CtaWidgets ctaConfig={settings?.ctaConfig} />
       </body>
     </html>
   );
