@@ -16,6 +16,7 @@ export default function Header({
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(false);
+  const [expandedMobileItems, setExpandedMobileItems] = useState(new Set());
 
   // Normalise data shape coming from the API
   const hdr = config.header ?? config ?? {};
@@ -78,15 +79,45 @@ export default function Header({
   // ─── Desktop nav links ────────────────────────────────────────────────────────
   const DesktopNav = () => (
     <nav className="hidden md:flex items-center gap-8">
-      {navItems.map((item, idx) => (
-        <Link
-          key={item.id || `desktop-nav-${idx}`}
-          href={item.url}
-          className="text-sm font-medium text-gray-700 hover:text-black transition"
-        >
-          {item.label}
-        </Link>
-      ))}
+      {navItems.map((item, idx) => {
+        const hasChildren = item.children && item.children.length > 0;
+        return hasChildren ? (
+          <div
+            key={item.id || `desktop-nav-${idx}`}
+            className="relative group py-2"
+          >
+            <Link
+              href={item.url}
+              className="flex items-center gap-1.5 text-sm font-medium text-gray-700 hover:text-black transition"
+            >
+              {item.label}
+              <ChevronDown
+                size={14}
+                className="text-gray-400 group-hover:text-black transition duration-200"
+              />
+            </Link>
+            <div className="absolute left-0 mt-2 w-56 rounded-xl bg-white border border-gray-150 shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 transform translate-y-1 group-hover:translate-y-0 z-50 p-2">
+              {item.children.map((child, cIdx) => (
+                <Link
+                  key={child.id || `desktop-child-${idx}-${cIdx}`}
+                  href={child.url}
+                  className="block rounded-lg px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-black transition"
+                >
+                  {child.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <Link
+            key={item.id || `desktop-nav-${idx}`}
+            href={item.url}
+            className="text-sm font-medium text-gray-700 hover:text-black transition"
+          >
+            {item.label}
+          </Link>
+        );
+      })}
       {categories?.length > 0 && (
         <div className="relative group py-2">
           <button className="flex items-center gap-1.5 text-sm font-medium text-gray-700 hover:text-black transition focus:outline-none cursor-pointer">
@@ -149,29 +180,89 @@ export default function Header({
         return (
           <div className={`flex items-center justify-between ${paddingClass}`}>
             <nav className="hidden md:flex items-center gap-8">
-              {left.map((item, idx) => (
-                <Link
-                  key={item.id || `split-left-${idx}`}
-                  href={item.url}
-                  className="text-sm font-medium text-gray-700 hover:text-black transition"
-                >
-                  {item.label}
-                </Link>
-              ))}
+              {left.map((item, idx) => {
+                const hasChildren = item.children && item.children.length > 0;
+                return hasChildren ? (
+                  <div
+                    key={item.id || `split-left-${idx}`}
+                    className="relative group py-2"
+                  >
+                    <Link
+                      href={item.url}
+                      className="flex items-center gap-1.5 text-sm font-medium text-gray-700 hover:text-black transition"
+                    >
+                      {item.label}
+                      <ChevronDown
+                        size={14}
+                        className="text-gray-400 group-hover:text-black transition duration-200"
+                      />
+                    </Link>
+                    <div className="absolute left-0 mt-2 w-56 rounded-xl bg-white border border-gray-150 shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 transform translate-y-1 group-hover:translate-y-0 z-50 p-2">
+                      {item.children.map((child, cIdx) => (
+                        <Link
+                          key={child.id || `split-left-child-${idx}-${cIdx}`}
+                          href={child.url}
+                          className="block rounded-lg px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-black transition"
+                        >
+                          {child.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <Link
+                    key={item.id || `split-left-${idx}`}
+                    href={item.url}
+                    className="text-sm font-medium text-gray-700 hover:text-black transition"
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
             </nav>
             <Link href="/" className="absolute left-1/2 -translate-x-1/2">
               <LogoEl />
             </Link>
             <nav className="hidden md:flex items-center gap-8">
-              {right.map((item, idx) => (
-                <Link
-                  key={item.id || `split-right-${idx}`}
-                  href={item.url}
-                  className="text-sm font-medium text-gray-700 hover:text-black transition"
-                >
-                  {item.label}
-                </Link>
-              ))}
+              {right.map((item, idx) => {
+                const hasChildren = item.children && item.children.length > 0;
+                return hasChildren ? (
+                  <div
+                    key={item.id || `split-right-${idx}`}
+                    className="relative group py-2"
+                  >
+                    <Link
+                      href={item.url}
+                      className="flex items-center gap-1.5 text-sm font-medium text-gray-700 hover:text-black transition"
+                    >
+                      {item.label}
+                      <ChevronDown
+                        size={14}
+                        className="text-gray-400 group-hover:text-black transition duration-200"
+                      />
+                    </Link>
+                    <div className="absolute left-0 mt-2 w-56 rounded-xl bg-white border border-gray-150 shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 transform translate-y-1 group-hover:translate-y-0 z-50 p-2">
+                      {item.children.map((child, cIdx) => (
+                        <Link
+                          key={child.id || `split-right-child-${idx}-${cIdx}`}
+                          href={child.url}
+                          className="block rounded-lg px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-black transition"
+                        >
+                          {child.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <Link
+                    key={item.id || `split-right-${idx}`}
+                    href={item.url}
+                    className="text-sm font-medium text-gray-700 hover:text-black transition"
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
               <CtaBtn />
             </nav>
             {showMobileToggle && <MobileToggle />}
@@ -260,16 +351,53 @@ export default function Header({
         )}
 
         <nav className="flex flex-col p-4 gap-1">
-          {navItems.map((item, idx) => (
-            <Link
-              key={item.id || `mobile-nav-${idx}`}
-              href={item.url}
-              className="py-3 border-b text-sm font-medium hover:text-black transition"
-              onClick={() => setMobileOpen(false)}
-            >
-              {item.label}
-            </Link>
-          ))}
+          {navItems.map((item, idx) => {
+            const hasChildren = item.children && item.children.length > 0;
+            const isExpanded = expandedMobileItems.has(idx);
+            return (
+              <div key={item.id || `mobile-nav-${idx}`}>
+                <div className="flex items-center justify-between border-b">
+                  <Link
+                    href={item.url}
+                    className="py-3 text-sm font-medium hover:text-black transition flex-1"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    {item.label}
+                  </Link>
+                  {hasChildren && (
+                    <button
+                      onClick={() => {
+                        const next = new Set(expandedMobileItems);
+                        if (isExpanded) next.delete(idx);
+                        else next.add(idx);
+                        setExpandedMobileItems(next);
+                      }}
+                      className="p-3"
+                    >
+                      <ChevronDown
+                        size={16}
+                        className={`text-gray-400 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
+                      />
+                    </button>
+                  )}
+                </div>
+                {hasChildren && isExpanded && (
+                  <div className="ml-4 flex flex-col gap-1 border-l-2 border-gray-100 pl-4">
+                    {item.children.map((child, cIdx) => (
+                      <Link
+                        key={child.id || `mobile-child-${idx}-${cIdx}`}
+                        href={child.url}
+                        className="py-2 text-sm text-gray-600 hover:text-black"
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        {child.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
 
           {/* Mobile Categories collapsible */}
           {categories?.length > 0 && (
