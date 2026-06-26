@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { CMSClient } from "@yourcompany/global-backend-next";
 import ContactFormSection from "@/components/ContactFormSection";
-import { RichTextRenderer } from "@yourcompany/global-backend-next/components"
+import { RichTextRenderer } from "@yourcompany/global-backend-next/components";
 export const dynamic = "force-dynamic";
 
 const cms = new CMSClient({
@@ -195,15 +195,15 @@ function BlogPostDetail({ post }) {
             <p className="text-[10px] text-slate-400 font-medium mt-0.5">
               {post.publishedAt
                 ? new Date(post.publishedAt).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })
                 : new Date(post.createdAt).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
             </p>
           </div>
         </div>
@@ -227,8 +227,70 @@ function BlogPostDetail({ post }) {
         </p>
       )}
 
-      <RichTextRenderer content={post.content} />
+      {post.content &&
+      typeof post.content === "string" &&
+      post.content.startsWith("<") ? (
+        <div
+          className="prose prose-slate max-w-none text-sm leading-relaxed"
+          dangerouslySetInnerHTML={{ __html: post.content }}
+        />
+      ) : (
+        <RichTextRenderer content={post.content} />
+      )}
     </article>
+  );
+}
+
+function LegalPageDetail({ legalPage }) {
+  const page = legalPage?.legalPage || legalPage?.page || legalPage;
+  if (!page) return null;
+
+  const title = page.title || "";
+  const content = page.content || "";
+  const contentJson = page.contentJson || null;
+  const lastUpdated = page.updatedAt || page.lastUpdated;
+
+  return (
+    <div className="min-h-screen bg-white pt-28 pb-20">
+      <div className="max-w-4xl mx-auto px-6">
+        <nav className="flex items-center gap-2 text-[10px] font-bold text-slate-400 mb-8 uppercase tracking-wider">
+          <Link href="/" className="hover:text-[#d9b04f] transition">
+            Home
+          </Link>
+          <span>/</span>
+          <span className="text-slate-600">{title || "Legal"}</span>
+        </nav>
+
+        <article className="prose prose-slate max-w-none">
+          <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
+            {title}
+          </h1>
+          {lastUpdated && (
+            <p className="text-xs text-slate-400 mb-8 border-b pb-4">
+              Last updated:{" "}
+              {new Date(lastUpdated).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </p>
+          )}
+
+          {contentJson ? (
+            <RichTextRenderer content={contentJson} />
+          ) : content?.startsWith("<") ? (
+            <div
+              className="text-sm text-slate-700 leading-relaxed space-y-4"
+              dangerouslySetInnerHTML={{ __html: content }}
+            />
+          ) : (
+            <div className="text-sm text-slate-700 leading-relaxed space-y-4 whitespace-pre-line">
+              {content}
+            </div>
+          )}
+        </article>
+      </div>
+    </div>
   );
 }
 
@@ -300,8 +362,6 @@ function TextBlockSection({ content }) {
         ? "md:flex-row-reverse"
         : "flex-col";
 
-  const renderedBody = renderMarkdown(content?.body);
-
   return (
     <section className="py-16 bg-white text-slate-800">
       <div className="max-w-7xl mx-auto px-6">
@@ -326,12 +386,20 @@ function TextBlockSection({ content }) {
                 {content.title}
               </h2>
             )}
-            {content?.body && (
-              <div
-                className="prose prose-slate max-w-none space-y-4"
-                dangerouslySetInnerHTML={{ __html: renderedBody }}
-              />
-            )}
+            {content?.body &&
+              (() => {
+                const body = content.body;
+                const isHtml =
+                  typeof body === "string" && body.trim().startsWith("<");
+                return (
+                  <div
+                    className="prose prose-slate max-w-none space-y-4"
+                    dangerouslySetInnerHTML={{
+                      __html: isHtml ? body : renderMarkdown(body),
+                    }}
+                  />
+                );
+              })()}
             {content?.cta?.text && (
               <div className="mt-8">
                 <a
@@ -347,6 +415,17 @@ function TextBlockSection({ content }) {
       </div>
     </section>
   );
+}
+
+function formatPrice(price) {
+  if (!price) return "Contact Us";
+  const trimmed = String(price).trim();
+  const isNumeric = !isNaN(trimmed) && !isNaN(parseFloat(trimmed));
+  const hasCurrencySymbol = /[\$\€\£\¥\₹]/.test(trimmed);
+  if (isNumeric && !hasCurrencySymbol) {
+    return `$${trimmed}`;
+  }
+  return trimmed;
 }
 
 function ServicesSection({ content }) {
@@ -379,7 +458,7 @@ function ServicesSection({ content }) {
               </div>
               <div className="border-t pt-4 flex items-center justify-between mt-4">
                 <span className="font-mono text-sm font-bold text-[#d9b04f]">
-                  {item.price || "Contact Us"}
+                  {formatPrice(item.price)}
                 </span>
                 {item.ctaButtonText && (
                   <a
@@ -572,7 +651,6 @@ function BlogsSection({ content }) {
             {content?.title || "Latest Articles"}
           </h2>
           <p className="text-slate-500 mt-2 text-sm">
-
             {content?.description ||
               "Stay updated with our latest news and corporate insights."}
           </p>
@@ -640,6 +718,9 @@ function BlogsSection({ content }) {
 // Next.js Dynamic Metadata Generation
 export async function generateMetadata({ params }) {
   const p = await params;
+  if (p?.slug?.[0] === "api") {
+    return {};
+  }
   const slug = p.slug.join("/");
   console.log("Slug:", slug);
   // Determine if it is a blog detail page
@@ -687,21 +768,69 @@ export async function generateMetadata({ params }) {
 }
 
 // Main Dynamic Catch-All Page Component
-export default async function CatchAllPage({ params }) {
+export default async function CatchAllPage({ params, searchParams }) {
   const p = await params;
+  if (p?.slug?.[0] === "api") {
+    return notFound();
+  }
+
+  const lastSegment = p.slug[p.slug.length - 1] || "";
+  if (
+    /\.(svg|png|jpg|jpeg|ico|css|js|woff|woff2|ttf|otf|map|json)$/i.test(
+      lastSegment,
+    )
+  ) {
+    return notFound();
+  }
   const slug = p.slug.join("/");
+
+  // In Next.js 15+ searchParams is a Promise — must be awaited.
+  const sp = await searchParams;
+  const preview = sp?.preview === "true";
 
   // Detect detailed blog post path, e.g. /blog/[slug] or /blogs/[slug]
   const isBlogPath =
     p.slug.length === 2 && (p.slug[0] === "blogs" || p.slug[0] === "blog");
 
+  // Detect legal page path, e.g. /legal/privacy, /legal/terms
+  const isLegalPath = slug.startsWith("legal/") && slug.split("/").length === 2;
+
+  if (isLegalPath) {
+    const legalType = slug.split("/")[1];
+    try {
+      const legalPage = await cms.getLegalPage(legalType);
+      // Render legal page - return early with the legal content
+      return <LegalPageDetail legalPage={legalPage} />;
+    } catch (err) {
+      console.error("Error loading legal page:", err);
+      return notFound();
+    }
+  }
+
   if (isBlogPath) {
     let post = null;
     try {
       const postSlug = p.slug[1];
+      // Try published posts first
       const postsResponse = await cms.getPosts();
       const posts = postsResponse.posts || [];
       post = posts.find((x) => x.slug === postSlug);
+
+      // If not found and previewing, try fetching draft directly via the API
+      if (!post && preview) {
+        try {
+          const singlePostRes = await fetch(
+            `${cms.baseUrl}/api/posts/${postSlug}?siteId=${cms.siteId}&preview=true`,
+            { cache: "no-store" },
+          );
+          if (singlePostRes.ok) {
+            const data = await singlePostRes.json();
+            post = data.post || data.data || null;
+          }
+        } catch (e) {
+          console.error("Failed to fetch draft post for preview:", e);
+        }
+      }
     } catch (err) {
       console.error("Error loading blog details:", err);
       return notFound();
@@ -713,14 +842,23 @@ export default async function CatchAllPage({ params }) {
 
     return (
       <div className="min-h-screen bg-slate-50 text-slate-950 pt-28">
+        {preview && (
+          <div className="bg-amber-500 text-white text-center py-1.5 text-[10px] font-bold uppercase tracking-wider sticky top-0 z-50 shadow-sm">
+            ⚡ Preview Mode &mdash; Viewing Draft Post
+          </div>
+        )}
         <BlogPostDetail post={post} />
       </div>
     );
   }
 
   let pageData = null;
+  let pagePosts = [];
   try {
-    pageData = await cms.getPage(slug);
+    pageData = await cms.getPage(slug, preview);
+    // Fetch posts for any BLOGS sections on this page
+    const postsRes = await cms.getPosts();
+    pagePosts = (postsRes.posts || []).slice(0, 3);
   } catch (err) {
     console.error("Error loading CMS page:", err);
     return notFound();
@@ -728,63 +866,80 @@ export default async function CatchAllPage({ params }) {
 
   const { page, sections } = pageData;
 
-  if (!page || page.status !== "PUBLISHED") {
+  if (!page || (!preview && page.status !== "PUBLISHED")) {
     return notFound();
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-950 pt-28 flex flex-col justify-between">
-      {/* JSON-LD Schema Markup Injection */}
-      {pageData.jsonLd && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(pageData.jsonLd) }}
-        />
+    <div className="min-h-screen bg-slate-50 text-slate-950 flex flex-col justify-between">
+      {preview && (
+        <div className="bg-amber-500 text-white text-center py-1.5 text-[10px] font-bold uppercase tracking-wider sticky top-0 z-50 shadow-sm">
+          ⚡ Preview Mode &mdash; Viewing Draft Layout
+        </div>
       )}
 
-      {/* Main Content Area */}
-      <main className="grow">
-        {sections.filter((s) => s.isVisible !== false).map((s) => {
-          const type = String(s.type || "").toUpperCase();
-          if (type === "HERO")
-            return <HeroSection key={s.id} content={s.content} />;
-          if (type === "TEXT_BLOCK")
-            return <TextBlockSection key={s.id} content={s.content} />;
-          if (type === "SERVICES")
-            return <ServicesSection key={s.id} content={s.content} />;
-          if (type === "TEAM")
-            return <TeamSection key={s.id} content={s.content} />;
-          if (type === "TESTIMONIALS")
-            return <TestimonialsSection key={s.id} content={s.content} />;
-          if (type === "FAQ")
-            return <FaqSection key={s.id} content={s.content} />;
-          if (type === "CTA")
-            return <CtaSection key={s.id} content={s.content} />;
-          if (type === "BLOGS")
-            return <BlogsSection key={s.id} content={s.content} />;
-          if (type === "CONTACT_FORM") {
-            return (
-              <ContactFormSection
-                key={s.id}
-                siteId={cms.siteId}
-                content={s.content}
-                recaptchaSiteKey={null} // reCAPTCHA loaded dynamically if configured by settings
-              />
-            );
-          }
+      <div className="pt-28">
+        {/* JSON-LD Schema Markup Injection */}
+        {pageData.jsonLd && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(pageData.jsonLd),
+            }}
+          />
+        )}
 
-          return (
-            <section key={s.id} className="py-8 max-w-7xl mx-auto px-6">
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">
-                Fallback: {s.type} Section
-              </span>
-              <pre className="p-4 bg-white border rounded text-xs font-mono overflow-auto">
-                {JSON.stringify(s.content, null, 2)}
-              </pre>
-            </section>
-          );
-        })}
-      </main>
+        {/* Main Content Area */}
+        <main className="grow">
+          {sections
+            .filter((s) => s.isVisible !== false)
+            .map((s) => {
+              const type = String(s.type || "").toUpperCase();
+              if (type === "HERO")
+                return <HeroSection key={s.id} content={s.content} />;
+              if (type === "TEXT_BLOCK")
+                return <TextBlockSection key={s.id} content={s.content} />;
+              if (type === "SERVICES")
+                return <ServicesSection key={s.id} content={s.content} />;
+              if (type === "TEAM")
+                return <TeamSection key={s.id} content={s.content} />;
+              if (type === "TESTIMONIALS")
+                return <TestimonialsSection key={s.id} content={s.content} />;
+              if (type === "FAQ")
+                return <FaqSection key={s.id} content={s.content} />;
+              if (type === "CTA")
+                return <CtaSection key={s.id} content={s.content} />;
+              if (type === "BLOGS")
+                return (
+                  <BlogsSection
+                    key={s.id}
+                    content={{ ...s.content, items: pagePosts }}
+                  />
+                );
+              if (type === "CONTACT_FORM") {
+                return (
+                  <ContactFormSection
+                    key={s.id}
+                    siteId={cms.siteId}
+                    content={s.content}
+                    recaptchaSiteKey={null} // reCAPTCHA loaded dynamically if configured by settings
+                  />
+                );
+              }
+
+              return (
+                <section key={s.id} className="py-8 max-w-7xl mx-auto px-6">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">
+                    Fallback: {s.type} Section
+                  </span>
+                  <pre className="p-4 bg-white border rounded text-xs font-mono overflow-auto">
+                    {JSON.stringify(s.content, null, 2)}
+                  </pre>
+                </section>
+              );
+            })}
+        </main>
+      </div>
     </div>
   );
 }

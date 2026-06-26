@@ -215,8 +215,6 @@ function TextBlockSection({ content }) {
         ? "md:flex-row-reverse"
         : "flex-col";
 
-  const renderedBody = renderMarkdown(content?.body);
-
   return (
     <section className="py-16 bg-white text-slate-800">
       <div className="max-w-7xl mx-auto px-6">
@@ -241,12 +239,23 @@ function TextBlockSection({ content }) {
                 {content.title}
               </h2>
             )}
-            {content?.body && (
-              <div
-                className="prose prose-slate max-w-none space-y-4"
-                dangerouslySetInnerHTML={{ __html: renderedBody }}
-              />
-            )}
+            {content?.body &&
+              (() => {
+                const body = content.body;
+                const isHtml =
+                  typeof body === "string" && body.trim().startsWith("<");
+                return isHtml ? (
+                  <div
+                    className="prose prose-slate max-w-none space-y-4"
+                    dangerouslySetInnerHTML={{ __html: body }}
+                  />
+                ) : (
+                  <div
+                    className="prose prose-slate max-w-none space-y-4"
+                    dangerouslySetInnerHTML={{ __html: renderMarkdown(body) }}
+                  />
+                );
+              })()}
             {content?.cta?.text && (
               <div className="mt-8">
                 <a
@@ -262,6 +271,17 @@ function TextBlockSection({ content }) {
       </div>
     </section>
   );
+}
+
+function formatPrice(price) {
+  if (!price) return "Contact Us";
+  const trimmed = String(price).trim();
+  const isNumeric = !isNaN(trimmed) && !isNaN(parseFloat(trimmed));
+  const hasCurrencySymbol = /[\$\€\£\¥\₹]/.test(trimmed);
+  if (isNumeric && !hasCurrencySymbol) {
+    return `$${trimmed}`;
+  }
+  return trimmed;
 }
 
 function ServicesSection({ content }) {
@@ -294,7 +314,7 @@ function ServicesSection({ content }) {
               </div>
               <div className="border-t pt-4 flex items-center justify-between mt-4">
                 <span className="font-mono text-sm font-bold text-[#d9b04f]">
-                  {item.price || "Contact Us"}
+                  {formatPrice(item.price)}
                 </span>
                 {item.ctaButtonText && (
                   <a
@@ -574,10 +594,18 @@ export async function generateMetadata() {
 }
 
 // Main Dynamic Catch-All Page Component for root homepage
-export default async function HomePage() {
+export default async function HomePage({ searchParams }) {
+  // In Next.js 15+ searchParams is a Promise — must be awaited.
+  const sp = await searchParams;
+  const preview = sp?.preview === "true";
+
   let pageData = null;
+  let latestPosts = [];
   try {
-    pageData = await cms.getPage("");
+    pageData = await cms.getPage("", preview);
+    // Fetch latest blog posts for the blog section
+    const postsData = await cms.getPosts();
+    latestPosts = (postsData.posts || []).slice(0, 3);
   } catch (err) {
     console.error("Error loading CMS page:", err);
     return notFound();
@@ -585,65 +613,80 @@ export default async function HomePage() {
 
   const { page, sections } = pageData;
 
-  if (!page || page.status !== "PUBLISHED") {
+  if (!page || (!preview && page.status !== "PUBLISHED")) {
     return notFound();
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-950 pt-28 flex flex-col justify-between">
-      {/* JSON-LD Schema Markup Injection */}
-      {pageData.jsonLd && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(pageData.jsonLd) }}
-        />
+    <div className="min-h-screen bg-slate-50 text-slate-950 flex flex-col justify-between">
+      {preview && (
+        <div className="bg-amber-500 text-white text-center py-1.5 text-[10px] font-bold uppercase tracking-wider sticky top-0 z-50 shadow-sm">
+          ⚡ Preview Mode &mdash; Viewing Draft Layout
+        </div>
       )}
 
-      {/* Main Content Area */}
-      <main className="grow">
-        {sections
-          .filter((s) => s.isVisible !== false)
-          .map((s) => {
-            const type = String(s.type || "").toUpperCase();
-            if (type === "HERO")
-              return <HeroSection key={s.id} content={s.content} />;
-            if (type === "TEXT_BLOCK")
-              return <TextBlockSection key={s.id} content={s.content} />;
-            if (type === "SERVICES")
-              return <ServicesSection key={s.id} content={s.content} />;
-            if (type === "TEAM")
-              return <TeamSection key={s.id} content={s.content} />;
-            if (type === "TESTIMONIALS")
-              return <TestimonialsSection key={s.id} content={s.content} />;
-            if (type === "FAQ")
-              return <FaqSection key={s.id} content={s.content} />;
-            if (type === "CTA")
-              return <CtaSection key={s.id} content={s.content} />;
-            if (type === "BLOGS")
-              return <BlogsSection key={s.id} content={s.content} />;
-            if (type === "CONTACT_FORM") {
-              return (
-                <ContactFormSection
-                  key={s.id}
-                  siteId={cms.siteId}
-                  content={s.content}
-                  recaptchaSiteKey={null}
-                />
-              );
-            }
+      <div className="pt-28">
+        {/* JSON-LD Schema Markup Injection */}
+        {pageData.jsonLd && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(pageData.jsonLd),
+            }}
+          />
+        )}
 
-            return (
-              <section key={s.id} className="py-8 max-w-7xl mx-auto px-6">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">
-                  Fallback: {s.type} Section
-                </span>
-                <pre className="p-4 bg-white border rounded text-xs font-mono overflow-auto">
-                  {JSON.stringify(s.content, null, 2)}
-                </pre>
-              </section>
-            );
-          })}
-      </main>
+        {/* Main Content Area */}
+        <main className="grow">
+          {sections
+            .filter((s) => s.isVisible !== false)
+            .map((s) => {
+              const type = String(s.type || "").toUpperCase();
+              if (type === "HERO")
+                return <HeroSection key={s.id} content={s.content} />;
+              if (type === "TEXT_BLOCK")
+                return <TextBlockSection key={s.id} content={s.content} />;
+              if (type === "SERVICES")
+                return <ServicesSection key={s.id} content={s.content} />;
+              if (type === "TEAM")
+                return <TeamSection key={s.id} content={s.content} />;
+              if (type === "TESTIMONIALS")
+                return <TestimonialsSection key={s.id} content={s.content} />;
+              if (type === "FAQ")
+                return <FaqSection key={s.id} content={s.content} />;
+              if (type === "CTA")
+                return <CtaSection key={s.id} content={s.content} />;
+              if (type === "BLOGS")
+                return (
+                  <BlogsSection
+                    key={s.id}
+                    content={{ ...s.content, items: latestPosts }}
+                  />
+                );
+              if (type === "CONTACT_FORM") {
+                return (
+                  <ContactFormSection
+                    key={s.id}
+                    siteId={cms.siteId}
+                    content={s.content}
+                    recaptchaSiteKey={null}
+                  />
+                );
+              }
+
+              return (
+                <section key={s.id} className="py-8 max-w-7xl mx-auto px-6">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">
+                    Fallback: {s.type} Section
+                  </span>
+                  <pre className="p-4 bg-white border rounded text-xs font-mono overflow-auto">
+                    {JSON.stringify(s.content, null, 2)}
+                  </pre>
+                </section>
+              );
+            })}
+        </main>
+      </div>
     </div>
   );
 }
