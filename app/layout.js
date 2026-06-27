@@ -8,6 +8,7 @@ import VisitorTracker from "@/components/VisitorTracker";
 import CookieConsentBanner from "@/components/CookieConsentBanner";
 import CtaWidgets from "@/components/CtaWidgets";
 import "./globals.css";
+export const dynamic = "force-dynamic";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -39,6 +40,45 @@ export default async function RootLayout({ children }) {
     console.error("Failed to load header/navigation:", e);
   }
 
+  // Fetch categories for Practice Areas dropdown
+  let categories = [];
+  try {
+    const baseUrl =
+      process.env.NEXT_PUBLIC_CMS_BASE_URL || "http://localhost:3000";
+    const catRes = await fetch(`${baseUrl}/api/categories`, {
+      cache: "no-store",
+    });
+    if (catRes.ok) {
+      const catData = await catRes.json();
+      categories = catData.categories || [];
+    }
+  } catch (e) {
+    console.error("Failed to load categories:", e);
+  }
+
+  // Transform navigation: find "Practice Areas" and add categories as dropdown children
+  // Also remove the parent URL so it acts as a dropdown trigger only
+  let navItems = navigation?.items || [];
+  navItems = navItems.map((item) => {
+    if (
+      item.label?.toLowerCase() === "practice areas" ||
+      item.label?.toLowerCase() === "practice area"
+    ) {
+      return {
+        ...item,
+        url: "#", // Prevents navigation — acts as dropdown trigger only
+        children:
+          categories.length > 0
+            ? categories.map((cat) => ({
+                label: cat.name,
+                url: `/category/${cat.slug}`,
+              }))
+            : item.children || [],
+      };
+    }
+    return item;
+  });
+
   let settings = null;
   try {
     const data = await cms.getGlobalSettings();
@@ -53,7 +93,7 @@ export default async function RootLayout({ children }) {
   let footerSettings = null;
   try {
     const footerResponse = await cms.getFooterLayout();
-    footerSettings = footerResponse.footer;
+    footerSettings = footerResponse.footer ?? {};
   } catch (e) {
     console.error("Failed to load footer layout:", e);
   }
@@ -108,8 +148,8 @@ export default async function RootLayout({ children }) {
         <SdkHeader
           logoUrl={logoUrl}
           siteName={siteName}
-          headerSettings={headerLayout?.header || headerLayout} // ← unwrap .header
-          navigationLinks={navigation?.items || []}
+          headerSettings={headerLayout?.header || headerLayout}
+          navigationLinks={navItems}
         />
 
         {children}

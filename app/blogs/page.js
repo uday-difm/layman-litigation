@@ -2,7 +2,6 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { notFound } from "next/navigation";
 import { CMSClient } from "@yourcompany/global-backend-next";
 export const dynamic = "force-dynamic";
 
@@ -13,7 +12,8 @@ const cms = new CMSClient({
 
 function SafeImage({ src, alt, ...props }) {
   if (!src) return null;
-  const isLocal = src.startsWith("/") || src.startsWith(".") || src.startsWith("..");
+  const isLocal =
+    src.startsWith("/") || src.startsWith(".") || src.startsWith("..");
   const isCloudinary = src.includes("res.cloudinary.com");
   if (isLocal || isCloudinary) {
     return <Image src={src} alt={alt} {...props} />;
@@ -24,7 +24,16 @@ function SafeImage({ src, alt, ...props }) {
       <img
         src={src}
         alt={alt}
-        style={{ position: "absolute", height: "100%", width: "100%", left: 0, top: 0, right: 0, bottom: 0, ...style }}
+        style={{
+          position: "absolute",
+          height: "100%",
+          width: "100%",
+          left: 0,
+          top: 0,
+          right: 0,
+          bottom: 0,
+          ...style,
+        }}
         {...rest}
       />
     );
@@ -34,7 +43,8 @@ function SafeImage({ src, alt, ...props }) {
 
 export const metadata = {
   title: "Legal Blog & Insights | Layman Litigation",
-  description: "Stay informed with our latest legal articles covering civil litigation, criminal defense, family law, business law, and real estate law.",
+  description:
+    "Stay informed with our latest legal articles covering civil litigation, criminal defense, family law, business law, and real estate law.",
 };
 
 export default async function BlogListingPage({ searchParams }) {
@@ -51,7 +61,9 @@ export default async function BlogListingPage({ searchParams }) {
     totalPosts = posts.length;
   } catch (err) {
     console.error("Failed to fetch blog posts:", err);
-    return notFound();
+    // Graceful fallback — show empty state
+    posts = [];
+    totalPosts = 0;
   }
 
   // Pagination
@@ -76,7 +88,8 @@ export default async function BlogListingPage({ searchParams }) {
             Legal Blog & Insights
           </h1>
           <p className="text-lg text-slate-300 max-w-2xl">
-            Expert legal analysis, guides, and updates written by our attorneys to help you understand the law.
+            Expert legal analysis, guides, and updates written by our attorneys
+            to help you understand the law.
           </p>
         </div>
       </div>
@@ -87,8 +100,12 @@ export default async function BlogListingPage({ searchParams }) {
           <div className="lg:col-span-3">
             {paginatedPosts.length === 0 ? (
               <div className="text-center py-20">
-                <h3 className="text-lg font-semibold text-slate-500">No posts yet</h3>
-                <p className="text-sm text-slate-400 mt-2">Check back soon for new articles.</p>
+                <h3 className="text-lg font-semibold text-slate-500">
+                  No posts yet
+                </h3>
+                <p className="text-sm text-slate-400 mt-2">
+                  Check back soon for new articles.
+                </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -101,7 +118,10 @@ export default async function BlogListingPage({ searchParams }) {
                     {post.featuredImage && (
                       <div className="relative w-full aspect-[16/10]">
                         <SafeImage
-                          src={post.featuredImage.secureUrl || post.featuredImage.url}
+                          src={
+                            post.featuredImage.secureUrl ||
+                            post.featuredImage.url
+                          }
                           alt={post.title}
                           fill
                           style={{ objectFit: "cover" }}
@@ -129,10 +149,15 @@ export default async function BlogListingPage({ searchParams }) {
                       )}
                       <div className="text-xs text-slate-400 font-semibold mt-4 pt-4 border-t flex justify-between">
                         <span>
-                          By {post.author ? post.author.email.split("@")[0] : "Author"}
+                          By{" "}
+                          {post.author
+                            ? post.author.email.split("@")[0]
+                            : "Author"}
                         </span>
                         <span>
-                          {new Date(post.publishedAt || post.createdAt).toLocaleDateString("en-US", {
+                          {new Date(
+                            post.publishedAt || post.createdAt,
+                          ).toLocaleDateString("en-US", {
                             month: "short",
                             day: "numeric",
                             year: "numeric",
@@ -156,19 +181,21 @@ export default async function BlogListingPage({ searchParams }) {
                     Previous
                   </Link>
                 )}
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                  <Link
-                    key={p}
-                    href={`/blogs?page=${p}`}
-                    className={`px-3 py-2 rounded-lg text-sm font-semibold transition ${
-                      p === pageNum
-                        ? "bg-[#1e3a5f] text-white"
-                        : "bg-white border hover:bg-slate-50"
-                    }`}
-                  >
-                    {p}
-                  </Link>
-                ))}
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (p) => (
+                    <Link
+                      key={p}
+                      href={`/blogs?page=${p}`}
+                      className={`px-3 py-2 rounded-lg text-sm font-semibold transition ${
+                        p === pageNum
+                          ? "bg-[#1e3a5f] text-white"
+                          : "bg-white border hover:bg-slate-50"
+                      }`}
+                    >
+                      {p}
+                    </Link>
+                  ),
+                )}
                 {pageNum < totalPages && (
                   <Link
                     href={`/blogs?page=${pageNum + 1}`}
@@ -218,7 +245,9 @@ export default async function BlogListingPage({ searchParams }) {
                       {post.title}
                     </h4>
                     <p className="text-xs text-slate-400 mt-1">
-                      {new Date(post.publishedAt || post.createdAt).toLocaleDateString("en-US", {
+                      {new Date(
+                        post.publishedAt || post.createdAt,
+                      ).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",
                       })}

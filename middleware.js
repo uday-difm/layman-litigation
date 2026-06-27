@@ -48,7 +48,7 @@ export async function middleware(request) {
 
     if (res.ok) {
       const data = await res.json();
-      const rule = data?.redirect;
+      const rule = data?.data?.redirect ?? data?.redirect;
 
       if (rule && rule.target) {
         const destination = rule.target.startsWith("http")
