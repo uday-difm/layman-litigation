@@ -9,7 +9,7 @@ const scrollToTopHandler = () => {
 const ScrollToTop = () => {
     return <button
         onClick={scrollToTopHandler}
-        className="flex fixed bottom-4 right-4 h-9 w-9 items-center justify-center rounded bg-[#d9b04f] text-black transition-colors hover:bg-[#c9a03f]"
+        className="fixed bottom-6 right-6 w-10 h-10 flex items-center justify-center rounded-[var(--ll-radius-sm)] bg-[var(--ll-ink)] text-[var(--ll-gold)] hover:bg-[var(--ll-gold)] hover:text-[var(--ll-ink)] shadow-[var(--ll-shadow-lift)] transition-all duration-200 hover:-translate-y-px active:translate-y-0"
         aria-label="Scroll to top"
     ><ArrowUp /></button>
 }

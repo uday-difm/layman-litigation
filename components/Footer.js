@@ -111,7 +111,7 @@ export default function Footer({
     `Copyright © ${new Date().getFullYear()} ${siteName}. All rights reserved.`;
 
   return (
-    <footer className="bg-[#212121] text-gray-300">
+    <footer className="bg-[var(--ll-ink)] text-[var(--ll-slate-text)]">
       {/* Main Footer Content */}
       <div className="mx-auto max-w-7xl px-8 py-12">
         {hasValidConfig ? (
@@ -121,17 +121,17 @@ export default function Footer({
               if (col.type === "logo_desc") {
                 return (
                   <div key={index}>
-                    <h3 className="mb-5 text-sm font-bold uppercase tracking-wider text-[#d9b04f]">
+                    <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--ll-gold)] mb-5">
                       {col.title || "About Us"}
                     </h3>
                     {col.logoUrl && (
                       <img
                         src={col.logoUrl}
                         alt="Logo"
-                        className="mb-4 h-6 w-auto opacity-80"
+                        className="mb-4 h-6 w-auto opacity-80" style={{filter:"brightness(0.9) sepia(0.1)"}}
                       />
                     )}
-                    <p className="text-sm leading-relaxed text-gray-400">
+                    <p className="text-sm text-[var(--ll-slate-text)] leading-relaxed">
                       {col.description}
                     </p>
                   </div>
@@ -145,7 +145,7 @@ export default function Footer({
                     : (col.items || []);
                 return (
                   <div key={index}>
-                    <h3 className="mb-5 text-sm font-bold uppercase tracking-wider text-[#d9b04f]">
+                    <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--ll-gold)] mb-5">
                       {col.title}
                     </h3>
                     <ul className="space-y-2">
@@ -153,7 +153,7 @@ export default function Footer({
                         <li key={link.label || `col-link-${idx}`}>
                           <Link
                             href={link.url || link.href || "#"}
-                            className="text-sm text-gray-400 transition-colors hover:text-[#d9b04f]"
+                            className="text-sm text-[var(--ll-slate-text)] hover:text-[var(--ll-gold)] transition-colors duration-150"
                           >
                             {link.label}
                           </Link>
@@ -179,17 +179,17 @@ export default function Footer({
 
                 return (
                   <div key={index}>
-                    <h3 className="mb-5 text-sm font-bold uppercase tracking-wider text-[#d9b04f]">
+                    <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--ll-gold)] mb-5">
                       {col.title}
                     </h3>
                     <ul className="space-y-2 text-sm text-gray-400">
-                      {dynamicAddress && <li>Address: {dynamicAddress}</li>}
+                      {dynamicAddress && <li><span className="text-[var(--ll-gold)] font-semibold">Address: </span>{dynamicAddress}</li>}
                       {dynamicPhone && (
                         <li>
-                          Phone:{" "}
+                          <span className="text-[var(--ll-gold)] font-semibold">Phone: </span>
                           <a
                             href={`tel:${dynamicPhone}`}
-                            className="hover:text-[#d9b04f] transition"
+                            className="hover:text-[var(--ll-gold)] transition"
                           >
                             {dynamicPhone}
                           </a>
@@ -197,10 +197,10 @@ export default function Footer({
                       )}
                       {dynamicEmail && (
                         <li>
-                          Email:{" "}
+                          <span className="text-[var(--ll-gold)] font-semibold">Email: </span>
                           <a
                             href={`mailto:${dynamicEmail}`}
-                            className="hover:text-[#d9b04f] transition"
+                            className="hover:text-[var(--ll-gold)] transition"
                           >
                             {dynamicEmail}
                           </a>
@@ -214,26 +214,26 @@ export default function Footer({
               if (col.type === "newsletter") {
                 return (
                   <div key={index}>
-                    <h3 className="mb-5 text-sm font-bold uppercase tracking-wider text-[#d9b04f]">
+                    <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--ll-gold)] mb-5">
                       {col.title}
                     </h3>
                     <p className="text-xs text-gray-400 mb-4 leading-relaxed">
                       Subscribe to our newsletter for the latest updates.
                     </p>
-                    <form onSubmit={handleNewsletterSubmit} className="flex max-w-sm rounded-lg overflow-hidden border border-gray-700 bg-neutral-950/40 p-1">
+                    <form onSubmit={handleNewsletterSubmit} className="flex rounded-[var(--ll-radius-sm)] overflow-hidden border border-white/10 bg-white/5 p-1 focus-within:border-[var(--ll-gold)]/40 transition-colors">
                       <input
                         type="email"
                         value={newsletterEmail}
                         onChange={(e) => setNewsletterEmail(e.target.value)}
                         placeholder={col.newsletterPlaceholder || "Email Address"}
-                        className="w-full bg-transparent px-3 py-1.5 text-xs text-white focus:outline-hidden"
+                        className="bg-transparent px-3 py-2 text-xs text-white placeholder:text-white/30 focus:outline-none"
                         required
                         disabled={newsletterLoading}
                       />
                       <button
                         type="submit"
                         disabled={newsletterLoading}
-                        className="bg-[#d9b04f] text-[#1b1b1b] font-bold px-4 py-1.5 text-xs hover:bg-[#c49d41] transition rounded cursor-pointer"
+                        className="bg-[var(--ll-gold)] hover:bg-[var(--ll-gold-dark)] text-[var(--ll-ink)] font-bold px-4 py-2 text-xs rounded-[4px] transition-colors cursor-pointer"
                       >
                         {newsletterLoading ? "Joining..." : (col.newsletterButtonText || "Join")}
                       </button>
@@ -256,7 +256,7 @@ export default function Footer({
             {/* Categories */}
             {(categoriesCol1.length > 0 || categoriesCol2.length > 0) && (
               <div className="md:col-span-2">
-                <h3 className="mb-5 text-sm font-bold uppercase tracking-wider text-[#d9b04f]">
+                <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--ll-gold)] mb-5">
                   Categories
                 </h3>
                 <div className="grid grid-cols-2 gap-x-8 gap-y-2">
@@ -265,7 +265,7 @@ export default function Footer({
                       <li key={cat.name}>
                         <Link
                           href={cat.href}
-                          className="text-sm text-gray-400 transition-colors hover:text-[#d9b04f]"
+                          className="text-sm text-[var(--ll-slate-text)] hover:text-[var(--ll-gold)] transition-colors duration-150"
                         >
                           {cat.name}
                         </Link>
@@ -277,7 +277,7 @@ export default function Footer({
                       <li key={cat.name}>
                         <Link
                           href={cat.href}
-                          className="text-sm text-gray-400 transition-colors hover:text-[#d9b04f]"
+                          className="text-sm text-[var(--ll-slate-text)] hover:text-[var(--ll-gold)] transition-colors duration-150"
                         >
                           {cat.name}
                         </Link>
@@ -290,7 +290,7 @@ export default function Footer({
 
             {/* Quick Links / Navigation fallback */}
             <div>
-              <h3 className="mb-5 text-sm font-bold uppercase tracking-wider text-[#d9b04f]">
+              <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--ll-gold)] mb-5">
                 Quick Links
               </h3>
               <ul className="space-y-2">
@@ -298,7 +298,7 @@ export default function Footer({
                   <li key={link.label || link.name || `fallback-link-${idx}`}>
                     <Link
                       href={link.url || link.href || "#"}
-                      className="text-sm text-gray-400 transition-colors hover:text-[#d9b04f]"
+                      className="text-sm text-[var(--ll-slate-text)] hover:text-[var(--ll-gold)] transition-colors duration-150"
                     >
                       {link.label || link.name}
                     </Link>
@@ -309,13 +309,13 @@ export default function Footer({
 
             {/* Dynamic Contact details fallback */}
             <div>
-              <h3 className="mb-5 text-sm font-bold uppercase tracking-wider text-[#d9b04f]">
+              <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--ll-gold)] mb-5">
                 Contact Info
               </h3>
               <ul className="space-y-2 text-sm text-gray-400">
                 {contactDetails?.addresses?.[0] && (
                   <li>
-                    Address: {
+                    <span className="text-[var(--ll-gold)] font-semibold">Address: </span>{
                       [
                         contactDetails.addresses[0].line1,
                         contactDetails.addresses[0].line2,
@@ -329,7 +329,7 @@ export default function Footer({
                     Phone:{" "}
                     <a
                       href={`tel:${contactDetails.phones[0].number}`}
-                      className="hover:text-[#d9b04f] transition"
+                      className="hover:text-[var(--ll-gold)] transition"
                     >
                       {contactDetails.phones[0].number}
                     </a>
@@ -340,7 +340,7 @@ export default function Footer({
                     Email:{" "}
                     <a
                       href={`mailto:${contactDetails.emails[0].address}`}
-                      className="hover:text-[#d9b04f] transition"
+                      className="hover:text-[var(--ll-gold)] transition"
                     >
                       {contactDetails.emails[0].address}
                     </a>
@@ -351,10 +351,10 @@ export default function Footer({
 
             {/* About / Branding */}
             <div>
-              <h3 className="mb-5 text-sm font-bold uppercase tracking-wider text-[#d9b04f]">
+              <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--ll-gold)] mb-5">
                 {siteName}
               </h3>
-              <p className="text-sm leading-relaxed text-gray-400">
+              <p className="text-sm text-[var(--ll-slate-text)] leading-relaxed">
                 © {new Date().getFullYear()}{" "}
                 <span className="italic text-[#d9b04f]">{siteName}</span>{" "}
                 – The House For All Legal Info. For the People, By the Law Lovers.
@@ -365,9 +365,9 @@ export default function Footer({
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-gray-700">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-8 py-4">
-          <p className="text-xs text-gray-500">{copyrightText}</p>
+      <div className="border-t border-white/8">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-8 py-5">
+          <p className="text-xs text-[var(--ll-light-text)]">{copyrightText}</p>
         </div>
       </div>
     </footer>

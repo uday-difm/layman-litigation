@@ -80,14 +80,16 @@ export default async function BlogListingPage({ searchParams }) {
   });
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-950">
+    <div className="min-h-screen bg-[var(--ll-mist)] text-[var(--ll-ink)]">
       {/* Header */}
-      <div className="pt-28 pb-12 bg-gradient-to-br from-[#1e3a5f] to-[#2a4a7f] text-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
+      <div className="relative pt-28 pb-16 bg-[var(--ll-ink)] text-white overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none" style={{background:"radial-gradient(ellipse at 30% 60%, rgba(201,168,76,0.1) 0%, transparent 65%)"}} />
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <span className="ll-eyebrow block mb-4">Legal Blog & Insights</span>
+          <h1 className="text-4xl md:text-6xl font-black tracking-[-0.03em] text-white mb-4">
             Legal Blog & Insights
           </h1>
-          <p className="text-lg text-slate-300 max-w-2xl">
+          <p className="text-white/60 text-base md:text-lg max-w-2xl font-light">
             Expert legal analysis, guides, and updates written by our attorneys
             to help you understand the law.
           </p>
@@ -113,7 +115,7 @@ export default async function BlogListingPage({ searchParams }) {
                   <Link
                     key={post.id}
                     href={`/blogs/${post.slug}`}
-                    className="group block bg-white rounded-xl shadow-sm border hover:shadow-md transition-all duration-200 overflow-hidden"
+                    className="group block bg-[var(--ll-cream)] rounded-[var(--ll-radius-md)] shadow-[var(--ll-shadow-card)] hover:shadow-[var(--ll-shadow-lift)] border border-[var(--ll-stone)] transition-all duration-300 overflow-hidden"
                   >
                     {post.featuredImage && (
                       <div className="relative w-full aspect-[16/10]">
@@ -125,6 +127,7 @@ export default async function BlogListingPage({ searchParams }) {
                           alt={post.title}
                           fill
                           style={{ objectFit: "cover" }}
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                       </div>
                     )}
@@ -133,21 +136,21 @@ export default async function BlogListingPage({ searchParams }) {
                         {(post.categories || []).map((c) => (
                           <span
                             key={c.id}
-                            className="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-slate-100 text-slate-650"
+                            className="inline-flex px-2.5 py-1 rounded-full bg-[var(--ll-gold-light)] text-[var(--ll-gold-dark)] text-[9px] font-bold uppercase tracking-wider border border-[var(--ll-gold)]/15"
                           >
                             {c.name}
                           </span>
                         ))}
                       </div>
-                      <h2 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-[#c9a84c] transition">
+                      <h2 className="font-bold text-[var(--ll-ink)] text-sm leading-snug mb-2 group-hover:text-[var(--ll-gold)] transition-colors duration-200">
                         {post.title}
                       </h2>
                       {post.excerpt && (
-                        <p className="text-sm text-slate-500 leading-relaxed line-clamp-3 mb-4">
+                        <p className="text-[var(--ll-slate-text)] text-sm leading-relaxed line-clamp-3 mb-4">
                           {post.excerpt}
                         </p>
                       )}
-                      <div className="text-xs text-slate-400 font-semibold mt-4 pt-4 border-t flex justify-between">
+                      <div className="text-[var(--ll-light-text)] text-xs pt-4 mt-4 border-t border-[var(--ll-stone)] flex justify-between">
                         <span>
                           By{" "}
                           {post.author
@@ -176,7 +179,7 @@ export default async function BlogListingPage({ searchParams }) {
                 {pageNum > 1 && (
                   <Link
                     href={`/blogs?page=${pageNum - 1}`}
-                    className="px-4 py-2 rounded-lg bg-white border text-sm font-semibold hover:bg-slate-50 transition"
+                    className="px-4 py-2 rounded-[var(--ll-radius-sm)] bg-[var(--ll-cream)] border border-[var(--ll-stone)] hover:border-[var(--ll-gold)]/40 text-[var(--ll-slate-text)] text-sm font-semibold transition"
                   >
                     Previous
                   </Link>
@@ -199,7 +202,7 @@ export default async function BlogListingPage({ searchParams }) {
                 {pageNum < totalPages && (
                   <Link
                     href={`/blogs?page=${pageNum + 1}`}
-                    className="px-4 py-2 rounded-lg bg-white border text-sm font-semibold hover:bg-slate-50 transition"
+                    className="px-4 py-2 rounded-[var(--ll-radius-sm)] bg-[var(--ll-cream)] border border-[var(--ll-stone)] hover:border-[var(--ll-gold)]/40 text-[var(--ll-slate-text)] text-sm font-semibold transition"
                   >
                     Next
                   </Link>
@@ -211,8 +214,8 @@ export default async function BlogListingPage({ searchParams }) {
           {/* Sidebar */}
           <aside className="lg:col-span-1">
             {/* Categories */}
-            <div className="bg-white rounded-xl border p-6 mb-6">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">
+            <div className="bg-[var(--ll-cream)] rounded-[var(--ll-radius-md)] shadow-[var(--ll-shadow-card)] border border-[var(--ll-stone)] p-6 mb-6">
+              <h3 className="ll-eyebrow mb-4 block">
                 Categories
               </h3>
               <div className="space-y-2">
@@ -221,7 +224,7 @@ export default async function BlogListingPage({ searchParams }) {
                   .map(([name, count]) => (
                     <div key={name} className="flex justify-between text-sm">
                       <span className="text-slate-700 font-medium">{name}</span>
-                      <span className="text-slate-400 text-xs bg-slate-100 px-2 py-0.5 rounded-full">
+                      <span className="text-xs bg-[var(--ll-stone)] text-[var(--ll-slate-text)] px-2 py-0.5 rounded-full">
                         {count}
                       </span>
                     </div>
@@ -230,8 +233,8 @@ export default async function BlogListingPage({ searchParams }) {
             </div>
 
             {/* Recent posts */}
-            <div className="bg-white rounded-xl border p-6">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">
+            <div className="bg-[var(--ll-cream)] rounded-[var(--ll-radius-md)] shadow-[var(--ll-shadow-card)] border border-[var(--ll-stone)] p-6">
+              <h3 className="ll-eyebrow mb-4 block">
                 Recent Posts
               </h3>
               <div className="space-y-4">
@@ -241,7 +244,7 @@ export default async function BlogListingPage({ searchParams }) {
                     href={`/blogs/${post.slug}`}
                     className="block group"
                   >
-                    <h4 className="text-sm font-semibold text-slate-700 group-hover:text-[#c9a84c] transition line-clamp-2">
+                    <h4 className="text-sm font-semibold text-slate-700 group-hover:text-[var(--ll-gold)] transition-colors duration-200 line-clamp-2">
                       {post.title}
                     </h4>
                     <p className="text-xs text-slate-400 mt-1">
@@ -258,14 +261,14 @@ export default async function BlogListingPage({ searchParams }) {
             </div>
 
             {/* Contact CTA */}
-            <div className="bg-[#1e3a5f] rounded-xl p-6 text-white mt-6">
+            <div className="bg-[var(--ll-ink)] rounded-[var(--ll-radius-md)] p-6 text-white border border-white/5 mt-6">
               <h3 className="text-base font-bold mb-2">Need Legal Help?</h3>
               <p className="text-sm text-slate-300 mb-4">
                 Schedule a free consultation with our experienced legal team.
               </p>
               <Link
                 href="/contact"
-                className="inline-block px-4 py-2 bg-[#c9a84c] text-white rounded-lg text-sm font-bold hover:bg-[#b8973a] transition"
+                className="px-7 py-3.5 rounded-[var(--ll-radius-sm)] bg-[var(--ll-gold)] hover:bg-[var(--ll-gold-dark)] text-[var(--ll-ink)] font-bold text-sm tracking-wide shadow-sm transition-all duration-200 hover:-translate-y-px active:translate-y-0 inline-block"
               >
                 Contact Us
               </Link>

@@ -30,13 +30,13 @@ function BlogPostDetail({ post }) {
   const categories = post.categories || [];
 
   return (
-    <article className="max-w-4xl mx-auto px-6 py-12">
-      <nav className="flex items-center gap-2 text-[10px] font-bold text-slate-400 mb-6 uppercase tracking-wider">
-        <Link href="/" className="hover:text-indigo-600 transition">
+    <article className="max-w-3xl mx-auto px-[var(--ll-content-x)] py-14">
+      <nav className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-[var(--ll-light-text)] mb-6">
+        <Link href="/" className="hover:text-[var(--ll-gold)] transition-colors">
           Home
         </Link>
         <span>/</span>
-        <Link href="/blog" className="hover:text-indigo-600 transition">
+        <Link href="/blog" className="hover:text-[var(--ll-gold)] transition-colors">
           Blog
         </Link>
         <span>/</span>
@@ -48,24 +48,24 @@ function BlogPostDetail({ post }) {
           {categories.map((c) => (
             <span
               key={c.id}
-              className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-indigo-50 text-indigo-600 border border-indigo-100"
+              className="inline-flex px-2.5 py-1 rounded-full bg-[var(--ll-gold-light)] text-[var(--ll-gold-dark)] text-[9px] font-bold uppercase tracking-wider border border-[var(--ll-gold)]/15"
             >
               {c.name}
             </span>
           ))}
         </div>
-        <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-slate-900 mb-6 leading-tight">
+        <h1 className="text-4xl md:text-5xl font-black tracking-[-0.03em] text-[var(--ll-ink)] mb-6 leading-[1.1]">
           {post.title}
         </h1>
         <div className="flex items-center gap-3 pb-6 border-b border-slate-200">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-blue-500 flex items-center justify-center text-white font-extrabold shadow-sm">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[var(--ll-gold)] to-[var(--ll-gold-dark)] flex items-center justify-center text-[var(--ll-ink)] font-extrabold shadow-sm">
             {post.author ? post.author.email.charAt(0).toUpperCase() : "A"}
           </div>
           <div>
-            <p className="text-xs font-bold text-slate-800">
+            <p className="text-xs font-bold text-[var(--ll-ink)]">
               {post.author ? post.author.email.split("@")[0] : "Author"}
             </p>
-            <p className="text-[10px] text-slate-400 font-medium mt-0.5">
+            <p className="text-[10px] text-[var(--ll-light-text)] font-medium mt-0.5">
               {post.publishedAt
                 ? new Date(post.publishedAt).toLocaleDateString("en-US", {
                     year: "numeric",
@@ -83,7 +83,7 @@ function BlogPostDetail({ post }) {
       </header>
 
       {post.featuredImage && (
-        <div className="relative w-full aspect-[16/10] md:aspect-[21/9] rounded-2xl overflow-hidden shadow-sm mb-10 border border-slate-100">
+        <div className="relative w-full aspect-[16/10] md:aspect-[21/9] rounded-[var(--ll-radius-lg)] overflow-hidden shadow-[var(--ll-shadow-lift)] mb-12 border border-[var(--ll-stone)]">
           <SafeImage
             src={post.featuredImage.secureUrl || post.featuredImage.url}
             alt={post.title}
@@ -95,7 +95,7 @@ function BlogPostDetail({ post }) {
       )}
 
       {post.excerpt && (
-        <p className="text-lg md:text-xl font-light text-slate-500 leading-relaxed mb-8 italic pl-4 border-l-4 border-slate-350">
+        <p className="text-base md:text-lg font-light leading-relaxed mb-10 text-[var(--ll-slate-text)] border-l-4 border-[var(--ll-gold)] italic pl-4">
           {post.excerpt}
         </p>
       )}
@@ -124,10 +124,10 @@ function LegalPageDetail({ legalPage }) {
   const lastUpdated = page.updatedAt || page.lastUpdated;
 
   return (
-    <div className="min-h-screen bg-white pt-28 pb-20">
+    <div className="min-h-screen bg-[var(--ll-mist)] pt-28 pb-20">
       <div className="max-w-4xl mx-auto px-6">
         <nav className="flex items-center gap-2 text-[10px] font-bold text-slate-400 mb-8 uppercase tracking-wider">
-          <Link href="/" className="hover:text-[#d9b04f] transition">
+          <Link href="/" className="hover:text-[var(--ll-gold)] transition">
             Home
           </Link>
           <span>/</span>
@@ -135,11 +135,11 @@ function LegalPageDetail({ legalPage }) {
         </nav>
 
         <article className="prose prose-slate max-w-none">
-          <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-[var(--ll-ink)] mb-4">
             {title}
           </h1>
           {lastUpdated && (
-            <p className="text-xs text-slate-400 mb-8 border-b pb-4">
+            <p className="text-xs text-[var(--ll-light-text)] mb-8 border-b border-[var(--ll-stone)] pb-4">
               Last updated:{" "}
               {new Date(lastUpdated).toLocaleDateString("en-US", {
                 year: "numeric",
@@ -290,14 +290,15 @@ export default async function CatchAllPage({ params, searchParams }) {
               .replace(/\b\w/g, (l) => l.toUpperCase());
 
       return (
-        <div className="min-h-screen bg-slate-50 text-slate-950">
+        <div className="min-h-screen bg-[var(--ll-mist)] text-[var(--ll-ink)]">
           {/* Header */}
-          <div className="pt-28 pb-12 bg-gradient-to-br from-[#1e3a5f] to-[#2a4a7f] text-white">
-            <div className="max-w-7xl mx-auto px-6">
-              <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
+          <div className="pt-28 pb-12 bg-[var(--ll-ink)] text-white relative overflow-hidden">
+            <div className="absolute inset-0 pointer-events-none" style={{background:"radial-gradient(ellipse at 30% 60%, rgba(201,168,76,0.1) 0%, transparent 65%)"}} />
+            <div className="max-w-7xl mx-auto px-6 relative z-10">
+              <h1 className="text-4xl md:text-6xl font-black tracking-[-0.03em] text-white mb-4">
                 {categoryName}
               </h1>
-              <p className="text-lg text-slate-300 max-w-2xl">
+              <p className="text-white/60 text-base md:text-lg max-w-2xl font-light">
                 Articles and insights in the {categoryName} category.
               </p>
             </div>
@@ -319,7 +320,7 @@ export default async function CatchAllPage({ params, searchParams }) {
                   <Link
                     key={post.id}
                     href={`/blogs/${post.slug}`}
-                    className="group block bg-white rounded-xl shadow-sm border hover:shadow-md transition-all duration-200 overflow-hidden"
+                    className="group block bg-[var(--ll-cream)] rounded-[var(--ll-radius-md)] shadow-[var(--ll-shadow-card)] hover:shadow-[var(--ll-shadow-lift)] border border-[var(--ll-stone)] transition-all duration-300 overflow-hidden"
                   >
                     {post.featuredImage && (
                       <div className="relative w-full aspect-[16/10]">
@@ -339,21 +340,21 @@ export default async function CatchAllPage({ params, searchParams }) {
                         {(post.categories || []).map((c) => (
                           <span
                             key={c.id}
-                            className="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-slate-100 text-slate-650"
+                            className="inline-flex px-2.5 py-1 rounded-full bg-[var(--ll-gold-light)] text-[var(--ll-gold-dark)] text-[9px] font-bold uppercase tracking-wider border border-[var(--ll-gold)]/15"
                           >
                             {c.name}
                           </span>
                         ))}
                       </div>
-                      <h2 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-[#c9a84c] transition line-clamp-2">
+                      <h2 className="font-bold text-[var(--ll-ink)] text-sm leading-snug mb-2 group-hover:text-[var(--ll-gold)] transition-colors duration-200 line-clamp-2">
                         {post.title}
                       </h2>
                       {post.excerpt && (
-                        <p className="text-sm text-slate-500 leading-relaxed line-clamp-3 mb-4">
+                        <p className="text-[var(--ll-slate-text)] text-sm leading-relaxed line-clamp-3 mb-4">
                           {post.excerpt}
                         </p>
                       )}
-                      <div className="text-xs text-slate-400 font-semibold">
+                      <div className="text-xs text-[var(--ll-light-text)] font-semibold">
                         {new Date(
                           post.publishedAt || post.createdAt,
                         ).toLocaleDateString("en-US", {
@@ -410,7 +411,7 @@ export default async function CatchAllPage({ params, searchParams }) {
     }
 
     return (
-      <div className="min-h-screen bg-slate-50 text-slate-950 pt-28">
+      <div className="min-h-screen bg-[var(--ll-mist)] text-[var(--ll-ink)] pt-28">
         {preview && (
           <div className="bg-amber-500 text-white text-center py-1.5 text-[10px] font-bold uppercase tracking-wider sticky top-0 z-50 shadow-sm">
             ⚡ Preview Mode &mdash; Viewing Draft Post
@@ -440,7 +441,7 @@ export default async function CatchAllPage({ params, searchParams }) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-950 flex flex-col justify-between">
+    <div className="min-h-screen bg-[var(--ll-mist)] text-[var(--ll-ink)] flex flex-col justify-between">
       {preview && (
         <div className="bg-amber-500 text-white text-center py-1.5 text-[10px] font-bold uppercase tracking-wider sticky top-0 z-50 shadow-sm">
           ⚡ Preview Mode &mdash; Viewing Draft Layout

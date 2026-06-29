@@ -27,32 +27,32 @@ export default async function NotFoundPage() {
   const redirectDelay = custom404?.redirectDelay ?? 5;
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-6">
-      <div className="text-center max-w-lg mx-auto py-20">
+    <div className="min-h-screen bg-[var(--ll-mist)] flex items-center justify-center px-6">
+      <div className="bg-[var(--ll-cream)] rounded-[var(--ll-radius-lg)] p-12 md:p-16 shadow-[var(--ll-shadow-lift)] border border-[var(--ll-stone)] text-center max-w-lg mx-auto">
         {/* 404 Graphic */}
-        <div className="text-8xl font-extrabold text-[#d9b04f] mb-6 opacity-80">
+        <div className="text-8xl font-black text-[var(--ll-gold)] mb-4 opacity-90 tracking-[-0.05em] leading-none">
           404
         </div>
 
-        <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
+        <h1 className="text-3xl font-extrabold text-[var(--ll-ink)] mb-4">
           {title}
         </h1>
 
-        <p className="text-sm text-slate-500 leading-relaxed mb-8 max-w-md mx-auto">
+        <p className="text-[var(--ll-slate-text)] text-sm leading-relaxed mb-10">
           {description}
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
             href={buttonLink}
-            className="px-6 py-3 bg-[#d9b04f] hover:bg-[#c49d41] text-[#1b1b1b] rounded-lg font-bold shadow transition hover:-translate-y-0.5"
+            className="px-7 py-3.5 rounded-[var(--ll-radius-sm)] bg-[var(--ll-gold)] hover:bg-[var(--ll-gold-dark)] text-[var(--ll-ink)] font-bold text-sm tracking-wide shadow-sm transition-all duration-200 hover:-translate-y-px active:translate-y-0"
           >
             {buttonText}
           </Link>
 
           <Link
             href="/"
-            className="px-6 py-3 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-lg font-semibold transition hover:-translate-y-0.5"
+            className="px-7 py-3.5 rounded-[var(--ll-radius-sm)] border-2 border-[var(--ll-ink)] text-[var(--ll-ink)] font-bold text-sm tracking-wide hover:bg-[var(--ll-ink)] hover:text-white transition-all duration-200"
           >
             Back to Home
           </Link>

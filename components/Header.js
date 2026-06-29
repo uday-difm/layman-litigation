@@ -54,11 +54,11 @@ export default function Header({
   const mobileLogo = mobileMenu.logoAlign ?? "left";
 
   // ─── Derived classes ──────────────────────────────────────────────────────────
-  const headerBg = transparent ? "bg-transparent" : "bg-white";
+  const headerBg = transparent ? "bg-transparent" : "bg-[var(--ll-cream)]/95 backdrop-blur-md";
   const paddingClass = PADDING_MAP[paddingY] ?? PADDING_MAP.medium;
   const shadowClass = SHADOW_MAP[shadowSize] ?? "";
   const stickyClass = sticky ? "sticky top-0 z-50" : "";
-  const borderClass = borderBottom ? "border-b border-gray-200" : "";
+  const borderClass = borderBottom ? "border-b border-[var(--ll-stone)]" : "";
 
   // ─── Logo element (shared desktop + mobile) ───────────────────────────────────
   const LogoEl = () =>
@@ -72,7 +72,7 @@ export default function Header({
         priority
       />
     ) : (
-      <span className="font-bold text-xl tracking-tight">{logoText}</span>
+      <span className="font-black text-xl tracking-[-0.02em] text-[var(--ll-ink)]">{logoText}</span>
     );
 
   // ─── Desktop nav links ────────────────────────────────────────────────────────
@@ -82,26 +82,26 @@ export default function Header({
         <Link
           key={item.id || `desktop-nav-${idx}`}
           href={item.url}
-          className="text-sm font-medium text-gray-700 hover:text-black transition"
+          className="text-sm font-medium text-[var(--ll-slate-text)] hover:text-[var(--ll-gold)] transition-colors duration-200"
         >
           {item.label}
         </Link>
       ))}
       {categories?.length > 0 && (
         <div className="relative group py-2">
-          <button className="flex items-center gap-1.5 text-sm font-medium text-gray-700 hover:text-black transition focus:outline-none cursor-pointer">
+          <button className="flex items-center gap-1.5 text-sm font-medium text-[var(--ll-slate-text)] hover:text-[var(--ll-gold)] transition-colors duration-200 focus:outline-none cursor-pointer after:content-[''] after:block after:h-px after:bg-[var(--ll-gold)] after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-200">
             Categories
             <ChevronDown
               size={14}
               className="text-gray-400 group-hover:text-black transition duration-200"
             />
           </button>
-          <div className="absolute left-0 mt-2 w-56 rounded-xl bg-white border border-gray-150 shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 translate-y-1 group-hover:translate-y-0 z-50 p-2">
+          <div className="absolute left-0 mt-2 w-56 bg-[var(--ll-cream)] border border-[var(--ll-stone)] rounded-[var(--ll-radius-md)] shadow-[var(--ll-shadow-lift)] opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 translate-y-1 group-hover:translate-y-0 z-50 p-2">
             {categories.map((cat, idx) => (
               <Link
                 key={cat.id || cat.slug || `desktop-cat-${idx}`}
                 href={`/category/${cat.slug}`}
-                className="block rounded-lg px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-black transition"
+                className="block text-sm text-[var(--ll-slate-text)] hover:text-[var(--ll-gold)] hover:bg-[var(--ll-mist)] rounded-[var(--ll-radius-sm)] px-4 py-2.5 transition-all duration-150"
               >
                 {cat.name}
               </Link>
@@ -117,7 +117,7 @@ export default function Header({
     ctaText ? (
       <Link
         href={ctaLink}
-        className={`px-5 py-2.5 rounded-lg bg-black text-white font-medium hover:bg-gray-800 transition ${className}`}
+        className={`px-5 py-2.5 rounded-[var(--ll-radius-sm)] bg-[var(--ll-gold)] hover:bg-[var(--ll-gold-dark)] text-[var(--ll-ink)] font-bold text-sm tracking-wide transition-all duration-200 hover:-translate-y-px ${className}`}
       >
         {ctaText}
       </Link>
@@ -153,7 +153,7 @@ export default function Header({
                 <Link
                   key={item.id || `split-left-${idx}`}
                   href={item.url}
-                  className="text-sm font-medium text-gray-700 hover:text-black transition"
+                  className="text-sm font-medium text-[var(--ll-slate-text)] hover:text-[var(--ll-gold)] transition-colors duration-200"
                 >
                   {item.label}
                 </Link>
@@ -167,7 +167,7 @@ export default function Header({
                 <Link
                   key={item.id || `split-right-${idx}`}
                   href={item.url}
-                  className="text-sm font-medium text-gray-700 hover:text-black transition"
+                  className="text-sm font-medium text-[var(--ll-slate-text)] hover:text-[var(--ll-gold)] transition-colors duration-200"
                 >
                   {item.label}
                 </Link>
@@ -227,7 +227,7 @@ export default function Header({
 
   // ─── Mobile toggle button ─────────────────────────────────────────────────────
   const MobileToggle = () => (
-    <button onClick={() => setMobileOpen((o) => !o)} className="md:hidden p-1">
+    <button onClick={() => setMobileOpen((o) => !o)} className="md:hidden p-1 text-[var(--ll-ink)] hover:text-[var(--ll-gold)] transition-colors">
       {mobileOpen ? <X size={24} /> : <Menu size={24} />}
     </button>
   );
@@ -238,7 +238,7 @@ export default function Header({
 
     const panelBase =
       mobileLayout === "drawer"
-        ? "fixed inset-y-0 left-0 w-72 bg-white shadow-xl z-[60] flex flex-col overflow-y-auto"
+        ? "fixed inset-y-0 left-0 w-72 bg-[var(--ll-cream)] border-r border-[var(--ll-stone)] z-[60] flex flex-col overflow-y-auto"
         : "absolute top-full left-0 w-full bg-white border-t shadow-md z-50";
 
     return (
@@ -264,7 +264,7 @@ export default function Header({
             <Link
               key={item.id || `mobile-nav-${idx}`}
               href={item.url}
-              className="py-3 border-b text-sm font-medium hover:text-black transition"
+              className="py-3.5 border-b border-[var(--ll-stone)] text-sm font-medium text-[var(--ll-slate-text)] hover:text-[var(--ll-gold)] transition-colors"
               onClick={() => setMobileOpen(false)}
             >
               {item.label}
@@ -313,7 +313,7 @@ export default function Header({
       {/* Announcement Bar */}
       {announcementBar?.enabled && (
         <div
-          className="text-center py-2 text-sm font-medium"
+          className="text-center py-2 text-sm font-medium font-medium text-sm"
           style={{
             backgroundColor: announcementBar.bgColor ?? "#2563eb",
             color: announcementBar.textColor ?? "#ffffff",
@@ -340,7 +340,7 @@ export default function Header({
       {/* Drawer backdrop */}
       {mobileOpen && mobileLayout === "drawer" && (
         <div
-          className="fixed inset-0 bg-black/40 z-[55] md:hidden"
+          className="fixed inset-0 bg-[var(--ll-ink)]/50 z-[55] md:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}
@@ -412,7 +412,7 @@ export default function Header({
 //                 <Link
 //                   key={item.id}
 //                   href={item.url}
-//                   className="text-sm font-medium text-gray-700 hover:text-black transition"
+//                   className="text-sm font-medium text-[var(--ll-slate-text)] hover:text-[var(--ll-gold)] transition-colors duration-200"
 //                 >
 //                   {item.label}
 //                 </Link>
@@ -431,7 +431,7 @@ export default function Header({
 //                       <Link
 //                         key={cat.id}
 //                         href={`/category/${cat.slug}`}
-//                         className="block rounded-lg px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-black transition"
+//                         className="block text-sm text-[var(--ll-slate-text)] hover:text-[var(--ll-gold)] hover:bg-[var(--ll-mist)] rounded-[var(--ll-radius-sm)] px-4 py-2.5 transition-all duration-150"
 //                       >
 //                         {cat.name}
 //                       </Link>

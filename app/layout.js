@@ -1,11 +1,13 @@
 import { Inter } from "next/font/google";
 import SdkHeader from "@/components/SdkHeader";
 import SdkFooter from "@/components/SdkFooter";
-import { GlobalAnalytics } from "@yourcompany/global-backend-next/components";
+import {
+  CookieConsentBanner,
+  GlobalAnalytics,
+} from "@yourcompany/global-backend-next/components";
 import ScrollToTop from "@/components/ScrolltoTop";
 import { cms } from "@/lib/cms";
 import VisitorTracker from "@/components/VisitorTracker";
-import CookieConsentBanner from "@/components/CookieConsentBanner";
 import CtaWidgets from "@/components/CtaWidgets";
 import "./globals.css";
 export const dynamic = "force-dynamic";
@@ -80,15 +82,40 @@ export default async function RootLayout({ children }) {
   });
 
   let settings = null;
+  let siteIsActive = true;
   try {
-    const data = await cms.getGlobalSettings();
-    settings = data.settings;
+    const baseUrl = process.env.NEXT_PUBLIC_CMS_BASE_URL || "http://localhost:3000";
+    const siteId = process.env.NEXT_PUBLIC_SITE_ID || "layman_litigation";
+    const res = await fetch(`${baseUrl}/api/settings?siteId=${encodeURIComponent(siteId)}`, {
+      cache: "no-store",
+    });
+    if (res.ok) {
+      const json = await res.json();
+      const payload = json.data ?? json;
+      if (payload) {
+        if (payload.isActive === false) {
+          siteIsActive = false;
+        }
+        settings = payload;
+      }
+    }
   } catch (e) {
-    console.error("Failed to load global settings:", e);
+    console.error("Failed to verify site status:", e);
   }
+
+  // Fallback to SDK if direct fetch settings are missing
+  if (!settings) {
+    try {
+      const data = await cms.getGlobalSettings();
+      settings = data.settings;
+    } catch (e) {
+      console.error("Failed to load global settings:", e);
+    }
+  }
+
   // Maintenance mode check
   const maintenanceMode = settings?.websiteSettings?.maintenanceMode === true;
-
+ 
   // Fetch footer layout dynamically
   let footerSettings = null;
   try {
@@ -97,9 +124,45 @@ export default async function RootLayout({ children }) {
   } catch (e) {
     console.error("Failed to load footer layout:", e);
   }
-
+ 
   const siteName = settings?.websiteSettings?.title || "Layman Litigation";
   const logoUrl = settings?.websiteSettings?.logoUrl;
+ 
+  if (!siteIsActive) {
+    return (
+      <html lang="en" className={`${inter.className} h-full antialiased`}>
+        <head>
+          <title>{siteName} - Deactivated</title>
+          <meta name="robots" content="noindex, nofollow" />
+        </head>
+        <body className="min-h-screen flex items-center justify-center bg-slate-50">
+          <div className="text-center max-w-md mx-auto px-6">
+            <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-rose-100 flex items-center justify-center">
+              <svg
+                className="w-8 h-8 text-rose-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
+                />
+              </svg>
+            </div>
+            <h1 className="text-2xl font-bold text-slate-900 mb-3">
+              Site Deactivated
+            </h1>
+            <p className="text-sm text-slate-500 leading-relaxed">
+              This website is currently deactivated by the administrator. Please check back later.
+            </p>
+          </div>
+        </body>
+      </html>
+    );
+  }
 
   if (maintenanceMode) {
     return (
@@ -159,7 +222,11 @@ export default async function RootLayout({ children }) {
           navigationLinks={navigation?.items || []}
         />
         <ScrollToTop />
-        <CookieConsentBanner complianceSettings={settings?.compliance} />
+        <CookieConsentBanner
+          complianceSettings={settings?.compliance}
+          siteId={process.env.NEXT_PUBLIC_SITE_ID || "layman_litigation"}
+          baseUrl={process.env.NEXT_PUBLIC_CMS_BASE_URL || "http://localhost:3000"}
+        />
         <CtaWidgets ctaConfig={settings?.ctaConfig} />
       </body>
     </html>

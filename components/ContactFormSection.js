@@ -69,43 +69,44 @@ export default function ContactFormSection({ siteId = "", content = {}, recaptch
   }
 
   return (
-    <section className="py-16 bg-white text-slate-800 border-t border-b">
-      <div className="max-w-3xl mx-auto px-6">
+    <section className="ll-section bg-[var(--ll-mist)] text-[var(--ll-slate-text)] border-t border-[var(--ll-stone)]">
+      <div className="max-w-2xl mx-auto px-[var(--ll-content-x)]">
         <div className="text-center mb-10">
-          <h2 className="text-3xl font-extrabold tracking-tight text-slate-900">
+          <span className="ll-eyebrow block mb-3">Free Consultation</span>
+          <h2 className="text-3xl md:text-4xl font-extrabold tracking-[-0.02em] text-[var(--ll-ink)] mb-4">
             {content?.title || "Get In Touch"}
           </h2>
           {content?.description && (
-            <p className="text-slate-500 mt-2 text-sm max-w-xl mx-auto leading-relaxed">
+            <p className="text-[var(--ll-slate-text)] text-sm leading-relaxed mt-2">
               {content.description}
             </p>
           )}
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+        <form onSubmit={handleSubmit} className="bg-[var(--ll-cream)] rounded-[var(--ll-radius-lg)] shadow-[var(--ll-shadow-card)] border border-[var(--ll-stone)] p-8 space-y-5" noValidate>
           <div style={{ display: "none" }} aria-hidden="true">
             <input type="text" name="honeypot" value={hp} onChange={(e) => setHp(e.target.value)} tabIndex={-1} />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Full Name</label>
-              <input type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder="Jane Doe" className="w-full rounded-xl border border-slate-200 bg-slate-50/20 px-3.5 py-2.5 text-xs outline-none hover:border-slate-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-200" />
+              <label className="block text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--ll-light-text)] mb-2">Full Name</label>
+              <input type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder="Jane Doe" className="w-full rounded-[var(--ll-radius-sm)] border border-[var(--ll-stone)] bg-[var(--ll-mist)] px-4 py-3 text-sm text-[var(--ll-ink)] outline-none placeholder:text-[var(--ll-light-text)] hover:border-[var(--ll-gold)]/40 focus:border-[var(--ll-gold)] focus:ring-4 focus:ring-[var(--ll-gold)]/10 transition-all duration-200" />
             </div>
             <div>
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Email Address</label>
-              <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="jane@company.com" className="w-full rounded-xl border border-slate-200 bg-slate-50/20 px-3.5 py-2.5 text-xs outline-none hover:border-slate-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-200" />
+              <label className="block text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--ll-light-text)] mb-2">Email Address</label>
+              <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="jane@company.com" className="w-full rounded-[var(--ll-radius-sm)] border border-[var(--ll-stone)] bg-[var(--ll-mist)] px-4 py-3 text-sm text-[var(--ll-ink)] outline-none placeholder:text-[var(--ll-light-text)] hover:border-[var(--ll-gold)]/40 focus:border-[var(--ll-gold)] focus:ring-4 focus:ring-[var(--ll-gold)]/10 transition-all duration-200" />
             </div>
           </div>
 
           <div>
-            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Phone Number (Optional)</label>
-            <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+1 (555) 000-0000" className="w-full rounded-xl border border-slate-200 bg-slate-50/20 px-3.5 py-2.5 text-xs outline-none hover:border-slate-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-200" />
+            <label className="block text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--ll-light-text)] mb-2">Phone Number (Optional)</label>
+            <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+1 (555) 000-0000" className="w-full rounded-[var(--ll-radius-sm)] border border-[var(--ll-stone)] bg-[var(--ll-mist)] px-4 py-3 text-sm text-[var(--ll-ink)] outline-none placeholder:text-[var(--ll-light-text)] hover:border-[var(--ll-gold)]/40 focus:border-[var(--ll-gold)] focus:ring-4 focus:ring-[var(--ll-gold)]/10 transition-all duration-200" />
           </div>
 
           <div>
-            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Your Message</label>
-            <textarea required rows={4} value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Tell us about your project or inquiry..." className="w-full rounded-xl border border-slate-200 bg-slate-50/20 px-3.5 py-2.5 text-xs leading-relaxed outline-none hover:border-slate-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-200 resize-none" />
+            <label className="block text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--ll-light-text)] mb-2">Your Message</label>
+            <textarea required rows={4} value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Tell us about your project or inquiry..." className="w-full rounded-[var(--ll-radius-sm)] border border-[var(--ll-stone)] bg-[var(--ll-mist)] px-4 py-3 text-sm text-[var(--ll-ink)] outline-none placeholder:text-[var(--ll-light-text)] hover:border-[var(--ll-gold)]/40 focus:border-[var(--ll-gold)] focus:ring-4 focus:ring-[var(--ll-gold)]/10 transition-all duration-200 resize-none" />
           </div>
 
           {recaptchaSiteKey && (
@@ -115,13 +116,13 @@ export default function ContactFormSection({ siteId = "", content = {}, recaptch
           )}
 
           {alert && (
-            <div className={`p-3.5 rounded-xl border text-xs flex items-center gap-2 ${alert.type === "success" ? "bg-emerald-50 border-emerald-200 text-emerald-800" : "bg-rose-50 border-rose-200 text-rose-800"}`}>
+            <div className={`p-4 border text-xs flex items-center gap-2 rounded-[var(--ll-radius-sm)] ${alert.type === "success" ? "bg-emerald-50 border-emerald-100 text-emerald-800 border-l-4 border-l-emerald-500" : "bg-rose-50 border-rose-100 text-rose-800 border-l-4 border-l-rose-500"}`}>
               <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${alert.type === "success" ? "bg-emerald-500" : "bg-rose-500"}`} />
               {alert.text}
             </div>
           )}
 
-          <button type="submit" disabled={loading} className="w-full flex items-center justify-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-3 text-xs font-bold shadow-sm transition-all disabled:opacity-60 disabled:cursor-not-allowed hover:-translate-y-0.5">
+          <button type="submit" disabled={loading} className="w-full flex items-center justify-center gap-2 rounded-[var(--ll-radius-sm)] bg-[var(--ll-gold)] hover:bg-[var(--ll-gold-dark)] text-[var(--ll-ink)] font-bold px-4 py-4 text-sm shadow-sm transition-all disabled:opacity-60 disabled:cursor-not-allowed hover:-translate-y-px active:translate-y-0 cursor-pointer">
             {loading ? "Sending Message..." : content?.buttonText || "Send Message"}
           </button>
         </form>

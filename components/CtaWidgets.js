@@ -48,7 +48,7 @@ function FloatingActions({ buttons }) {
           href={btn.link || "#"}
           target="_blank"
           rel="noopener noreferrer"
-          className="group px-4 py-2.5 backdrop-blur-md border border-neutral-800 text-[#d9b04f] rounded-full text-xs font-bold shadow-lg hover:shadow-xl hover:scale-105 hover:bg-neutral-850 active:scale-95 transition-all duration-200 flex items-center gap-2 cursor-pointer max-w-[180px] truncate"
+          className="group bg-[var(--ll-ink)] border border-[var(--ll-gold)]/25 text-[var(--ll-gold)] rounded-full px-4 py-2.5 text-xs font-bold shadow-[var(--ll-shadow-lift)] hover:scale-105 hover:border-[var(--ll-gold)]/60 backdrop-blur-md transition-all duration-200 flex items-center gap-2 cursor-pointer max-w-[180px] truncate"
           style={{ backgroundColor: btn.color || "#1e293b" }}
         >
           <Sparkles className="w-3.5 h-3.5 text-[#d9b04f] shrink-0 animate-pulse group-hover:rotate-12 transition-transform" />
@@ -165,12 +165,12 @@ function PopupModal({ popups }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 transition-all duration-300">
-      <div className="bg-[#1b1b1b] text-white rounded-2xl max-w-md w-full overflow-hidden shadow-2xl border border-neutral-800 relative transform transition-all scale-100 animate-in zoom-in-95 duration-300">
+    <div className="fixed inset-0 bg-[var(--ll-ink)]/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 transition-all duration-300">
+      <div className="bg-[var(--ll-cream)] text-[var(--ll-ink)] rounded-[var(--ll-radius-lg)] max-w-md w-full shadow-[var(--ll-shadow-lift)] border border-[var(--ll-stone)] border-t-2 border-t-[var(--ll-gold)] relative transform transition-all scale-100 animate-in zoom-in-95 duration-300">
         {/* Close Button */}
         <button
           onClick={handleClose}
-          className="absolute top-4 right-4 w-8 h-8 bg-neutral-900 hover:bg-neutral-800 text-neutral-400 hover:text-white rounded-full flex items-center justify-center transition-colors cursor-pointer border border-neutral-800 shadow-sm"
+          className="absolute top-4 right-4 w-8 h-8 rounded-full bg-[var(--ll-stone)] hover:bg-[var(--ll-ink)] hover:text-white text-[var(--ll-slate-text)] flex items-center justify-center transition-all cursor-pointer"
           title="Dismiss"
         >
           <X className="w-4 h-4" />
@@ -178,16 +178,16 @@ function PopupModal({ popups }) {
 
         {/* Content */}
         <div className="p-8 pt-10 text-center space-y-5">
-          <div className="w-14 h-14 bg-amber-500/10 text-[#d9b04f] rounded-full flex items-center justify-center mx-auto shadow-inner border border-amber-500/20">
+          <div className="w-14 h-14 bg-[var(--ll-gold-light)] text-[var(--ll-gold)] rounded-full border border-[var(--ll-gold)]/20 mx-auto flex items-center justify-center">
             <Megaphone className="w-6 h-6 animate-bounce" />
           </div>
 
           <div className="space-y-2">
-            <h3 className="text-xl font-extrabold text-white tracking-tight leading-snug">
+            <h3 className="text-xl font-extrabold text-[var(--ll-ink)] tracking-tight leading-snug">
               {activePopup.title}
             </h3>
             {activePopup.body && (
-              <p className="text-xs text-neutral-400 leading-relaxed">
+              <p className="text-sm text-[var(--ll-slate-text)] leading-relaxed">
                 {activePopup.body}
               </p>
             )}
@@ -209,14 +209,14 @@ function PopupModal({ popups }) {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email address..."
-                className="w-full px-4 py-3 bg-neutral-900 border border-neutral-800 rounded-xl text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#d9b04f] focus:ring-2 focus:ring-[#d9b04f]/20 transition-all"
+                className="w-full px-4 py-3 bg-[var(--ll-mist)] border border-[var(--ll-stone)] rounded-[var(--ll-radius-sm)] text-sm text-[var(--ll-ink)] placeholder:text-[var(--ll-light-text)] focus:outline-none focus:border-[var(--ll-gold)] focus:ring-4 focus:ring-[var(--ll-gold)]/10"
                 disabled={status === "submitting"}
               />
 
               <button
                 type="submit"
                 disabled={status === "submitting"}
-                className="w-full py-3 bg-[#d9b04f] hover:bg-[#c9a03f] disabled:bg-neutral-800 text-black font-bold rounded-xl text-xs shadow-lg transition-all cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0"
+                className="px-7 py-3.5 rounded-[var(--ll-radius-sm)] bg-[var(--ll-gold)] hover:bg-[var(--ll-gold-dark)] text-[var(--ll-ink)] font-bold text-sm tracking-wide shadow-sm transition-all duration-200 hover:-translate-y-px active:translate-y-0 w-full flex items-center justify-center gap-2 cursor-pointer"
               >
                 {status === "submitting" ? "Subscribing..." : "Join Newsletter"}
               </button>
@@ -229,7 +229,7 @@ function PopupModal({ popups }) {
             </form>
           )}
 
-          <div className="text-[9px] text-neutral-500 italic pt-1">
+          <div className="block text-center text-[10px] text-[var(--ll-light-text)] mt-3 italic">
             We value your privacy. Unsubscribe at any time.
           </div>
         </div>
