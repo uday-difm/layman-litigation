@@ -13,7 +13,7 @@
   --ll-slate-text:  #5C5852;
   --ll-light-text:  #9C9790;
   --ll-font-sans:   'Inter', system-ui, sans-serif;
-  --ll-section-y:   clamp(4rem, 8vw, 7rem);
+  --ll-section-y:   clamp(2.25rem, 4.5vw, 3.5rem);
   --ll-content-x:   clamp(1.25rem, 5vw, 5rem);
   --ll-radius-sm:   6px;
   --ll-radius-md:   12px;

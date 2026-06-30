@@ -141,6 +141,10 @@ export default async function HomePage({ searchParams }) {
         <main className="grow">
           {sections
             .filter((s) => s.isVisible !== false)
+            .filter((s) => {
+              const type = String(s.type || "").toUpperCase();
+              return !["TEAM", "FAQ", "BLOGS", "CTA"].includes(type);
+            })
             .map((s) => {
               const type = String(s.type || "").toUpperCase();
               if (type === "HERO")
